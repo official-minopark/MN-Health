@@ -74,7 +74,7 @@ body {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // TODO: Firebase 콘솔에서 발급받은 본인의 설정값으로 교체하세요
@@ -104,13 +104,15 @@ function ensureAuth() {
 }
 
 let currentUser = null;
+let recordsCache = {};
 
-async function getAllRecords() {
-  if (!currentUser) return {};
-  const snap = await getDocs(collection(db, "users", currentUser.uid, "records"));
-  const result = {};
-  snap.forEach(d => { result[d.id] = d.data(); });
-  return result;
+function subscribeRecords(onChange) {
+  if (!currentUser) return;
+  onSnapshot(collection(db, "users", currentUser.uid, "records"), (snap) => {
+    recordsCache = {};
+    snap.forEach(d => { recordsCache[d.id] = d.data(); });
+    onChange();
+  });
 }
 function formatDateStr(d) {
   const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
@@ -161,12 +163,13 @@ function makeChart(ctx, instance, labels, data, label, color) {
   });
 }
 
-async function render() {
-  const all = await getAllRecords();
-  const end = new Date(); end.setHours(0,0,0,0);
+function render() {
+  const all = recordsCache;
+  const end = new Date(); end.setHours(23,59,59,999);
   const start = new Date(end);
   if (currentRange === "month") start.setDate(start.getDate() - 29);
   else start.setFullYear(start.getFullYear() - 1);
+  start.setHours(0,0,0,0);
 
   const dates = Object.keys(all)
     .filter(d => { const dd = new Date(d); return dd >= start && dd <= end; })
@@ -196,7 +199,7 @@ async function render() {
 
 (async function init() {
   currentUser = await ensureAuth();
-  render();
+  subscribeRecords(render);
 })();
 </script>
 </body>

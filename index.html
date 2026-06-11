@@ -95,10 +95,11 @@ body {
 
   <div class="date-bar">
     <button id="prevDay">‹</button>
-    <div class="date-display" id="dateDisplay" style="cursor:pointer; position:relative;">
-      <div class="main" id="dateLabel">-</div>
-      <div class="sub" id="dateSubLabel"></div>
-      <input type="date" id="datePicker" style="position:absolute; left:0; bottom:0; width:1px; height:1px; opacity:0; pointer-events:none;">
+    <div class="date-display" id="dateDisplay" style="position:relative;">
+      <div class="main" id="dateLabel" style="pointer-events:none;">-</div>
+      <div class="sub" id="dateSubLabel" style="pointer-events:none;"></div>
+      <input type="date" id="datePicker" aria-label="날짜 선택"
+        style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:none; background:transparent;">
     </div>
     <button id="nextDay">›</button>
   </div>
@@ -321,14 +322,12 @@ function updateDateUI() {
 }
 
 const dateDisplay = document.getElementById("dateDisplay");
-dateDisplay.addEventListener("click", () => {
+// input이 전체 영역을 덮고 있어 직접 클릭으로 달력이 열림.
+// 일부 브라우저 보강: 클릭 시 showPicker 시도
+datePicker.addEventListener("click", () => {
   if (typeof datePicker.showPicker === "function") {
-    try { datePicker.showPicker(); return; } catch (e) {}
+    try { datePicker.showPicker(); } catch (e) {}
   }
-  // 폴백: showPicker 미지원 브라우저
-  datePicker.style.pointerEvents = "auto";
-  datePicker.focus();
-  datePicker.click();
 });
 
 datePicker.addEventListener("change", () => {
