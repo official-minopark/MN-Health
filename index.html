@@ -6,222 +6,85 @@
 <title>MN Health</title>
 <style>
 :root {
-  --bg: #f5f6f8;
-  --card: #ffffff;
-  --primary: #3182f6;
-  --primary-light: #e8f3ff;
-  --mint: #00d2b3;
-  --text: #191f28;
-  --text-sub: #8b95a1;
-  --border: #f2f4f6;
-  --red: #f04452;
-  --green: #00c896;
+  --bg: #f5f6f8; --card: #ffffff; --primary: #3182f6; --primary-light: #e8f3ff;
+  --mint: #00d2b3; --text: #191f28; --text-sub: #8b95a1; --border: #f2f4f6;
+  --red: #f04452; --green: #00c896;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 76px;
-  -webkit-font-smoothing: antialiased;
+  min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 76px; -webkit-font-smoothing: antialiased;
 }
-.app-header {
-  padding: 20px 20px 8px;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-.container {
-  flex: 1;
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 8px 20px;
-}
+.app-header { padding: 20px 20px 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.container { flex: 1; width: 100%; max-width: 480px; margin: 0 auto; padding: 8px 20px; }
 
-/* 날짜 선택 바 */
-.date-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--card);
-  border-radius: 16px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-}
-.date-bar button {
-  background: var(--bg);
-  border: none;
-  color: var(--text);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
+.date-bar { display: flex; align-items: center; justify-content: space-between; background: var(--card); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; }
+.date-bar button { background: var(--bg); border: none; color: var(--text); width: 36px; height: 36px; border-radius: 50%; font-size: 16px; font-weight: 700; cursor: pointer; }
 .date-bar button:disabled { opacity: 0.25; cursor: not-allowed; }
 .date-bar .date-display { text-align: center; flex: 1; }
 .date-bar .date-display .main { font-size: 17px; font-weight: 700; }
 .date-bar .date-display .sub { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
 
-/* 카드 공통 */
-.card {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 12px;
-}
-.card h3 {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--text);
-}
+.card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 12px; }
+.card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
 
-/* 빈 상태 */
 .empty-state { text-align: center; padding: 32px 8px; }
 .empty-state p { color: var(--text-sub); font-size: 14px; margin-bottom: 16px; }
 
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px 24px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-}
+.btn-primary { background: var(--primary); color: #fff; border: none; border-radius: 12px; padding: 14px 24px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; }
 .btn-primary:active { opacity: 0.85; }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-secondary {
-  background: var(--bg);
-  color: var(--text);
-  border: none;
-  border-radius: 12px;
-  padding: 14px 24px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-}
+.btn-secondary { background: var(--bg); color: var(--text); border: none; border-radius: 12px; padding: 14px 24px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; }
 
-/* 기록 행 */
-.record-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
+.record-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .record-row:last-of-type { border-bottom: none; }
 .record-row .label { font-size: 14px; color: var(--text-sub); }
 .record-row .value { font-size: 16px; font-weight: 700; }
 .diff-up { color: var(--red); font-size: 12px; font-weight: 600; margin-left: 6px; }
 .diff-down { color: var(--primary); font-size: 12px; font-weight: 600; margin-left: 6px; }
 
-/* AI 피드백 */
+.exercise-list-row { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.exercise-list-row:last-child { border-bottom: none; }
+.exercise-list-row .ex-name { font-size: 14px; font-weight: 600; }
+.exercise-list-row .ex-detail { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+.exercise-list-row .ex-cal { font-size: 15px; font-weight: 700; color: var(--primary); }
+
 .ai-card { background: var(--primary-light); }
 .ai-card h3 { color: var(--primary); }
 .ai-card p { font-size: 14px; line-height: 1.7; color: var(--text); white-space: pre-line; }
 .ai-card p.placeholder { color: var(--text-sub); }
 
-/* 입력 폼 */
 .field { margin-bottom: 12px; }
 .field label { display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 6px; font-weight: 600; }
-.field input, .field textarea {
-  width: 100%;
-  background: var(--bg);
-  border: none;
-  border-radius: 12px;
-  padding: 14px;
-  color: var(--text);
-  font-size: 15px;
-  font-family: inherit;
+.field input, .field select {
+  width: 100%; background: var(--bg); border: none; border-radius: 12px; padding: 14px;
+  color: var(--text); font-size: 15px; font-family: inherit;
 }
-.field textarea { resize: vertical; min-height: 64px; }
-.field input:focus, .field textarea:focus { outline: 2px solid var(--primary); }
+.field input:focus, .field select:focus { outline: 2px solid var(--primary); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .save-bar { display: flex; gap: 8px; margin-top: 8px; }
 
-/* 하단 네비게이션 */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  display: flex;
-  background: var(--card);
-  border-top: 1px solid var(--border);
-  max-width: 480px;
-  margin: 0 auto;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-.bottom-nav a {
-  flex: 1;
-  text-align: center;
-  padding: 10px 4px 10px;
-  text-decoration: none;
-  color: var(--text-sub);
-  font-size: 11px;
-  font-weight: 600;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.bottom-nav a .icon { font-size: 20px; }
+/* 운동 추가 영역 */
+.add-ex-bar { display: flex; gap: 8px; align-items: flex-end; }
+.add-ex-bar .field { flex: 1; margin-bottom: 0; }
+.add-ex-btn { background: var(--primary); color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.added-list { margin-top: 12px; }
+.added-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; font-size: 14px; }
+.added-item .remove { color: var(--red); cursor: pointer; font-weight: 700; background: none; border: none; font-size: 16px; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--card); border-top: 1px solid var(--border); max-width: 480px; margin: 0 auto; padding-bottom: env(safe-area-inset-bottom); }
+.bottom-nav a { flex: 1; text-align: center; padding: 10px 4px; text-decoration: none; color: var(--text-sub); font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .bottom-nav a svg { display: block; }
 .bottom-nav a.active { color: var(--primary); }
 
-/* 모달 */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(25,31,40,0.4);
-  display: none;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 100;
-}
+.modal-overlay { position: fixed; inset: 0; background: rgba(25,31,40,0.4); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
 .modal-overlay.show { display: flex; }
-.modal-sheet {
-  background: var(--card);
-  border-radius: 24px 24px 0 0;
-  width: 100%;
-  max-width: 480px;
-  padding: 12px 20px 30px;
-  max-height: 88vh;
-  overflow-y: auto;
-}
-.modal-handle {
-  width: 36px; height: 4px;
-  background: var(--border);
-  border-radius: 2px;
-  margin: 0 auto 16px;
-}
+.modal-sheet { background: var(--card); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; padding: 12px 20px 30px; max-height: 88vh; overflow-y: auto; }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
 .modal-sheet h2 { font-size: 18px; font-weight: 800; margin-bottom: 18px; }
 .section-title { font-size: 14px; font-weight: 700; color: var(--text-sub); margin: 18px 0 10px; }
 .section-title:first-of-type { margin-top: 0; }
-
-/* 그래프 페이지용 */
-.range-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-.range-tabs button {
-  flex: 1;
-  background: var(--card);
-  border: none;
-  color: var(--text-sub);
-  padding: 12px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.range-tabs button.active { background: var(--primary); color: #fff; }
-.no-data { text-align: center; color: var(--text-sub); font-size: 14px; padding: 60px 10px; }
 </style>
 </head>
 <body>
@@ -230,7 +93,6 @@ body {
 
 <div class="container">
 
-  <!-- 날짜 선택 -->
   <div class="date-bar">
     <button id="prevDay">‹</button>
     <div class="date-display">
@@ -240,7 +102,6 @@ body {
     <button id="nextDay">›</button>
   </div>
 
-  <!-- 날짜 기록장 -->
   <div class="card" id="recordCard">
     <div class="empty-state" id="emptyState">
       <p>이 날의 기록이 없어요</p>
@@ -255,19 +116,12 @@ body {
         <span class="value"><span id="bodyValue"></span><span id="bodyDiff"></span></span>
       </div>
 
-      <div class="record-row" id="exerciseRow" style="display:none;">
-        <span class="label">운동 소모 칼로리</span>
-        <span class="value" id="exerciseValue"></span>
-      </div>
-
-      <div class="record-row" id="nutritionRow" style="display:none;">
-        <span class="label">섭취 칼로리</span>
-        <span class="value" id="nutritionValue"></span>
-      </div>
-
-      <div class="record-row" id="waterRow" style="display:none;">
-        <span class="label">수분 섭취량</span>
-        <span class="value" id="waterValue"></span>
+      <div id="exerciseSection" style="display:none;">
+        <div class="record-row">
+          <span class="label">운동 소모 칼로리</span>
+          <span class="value" id="exerciseTotalValue"></span>
+        </div>
+        <div id="exerciseDetailList"></div>
       </div>
 
       <div class="save-bar" style="margin-top:16px;">
@@ -276,10 +130,9 @@ body {
     </div>
   </div>
 
-  <!-- AI 피드백 -->
   <div class="card ai-card">
     <h3>AI 피드백</h3>
-    <p id="aiFeedbackText" class="placeholder">기록을 저장하면 AI 피드백이 표시돼요.</p>
+    <p id="aiFeedbackText" class="placeholder">기록을 저장하면 피드백이 표시돼요.</p>
   </div>
 
 </div>
@@ -303,20 +156,18 @@ body {
     </div>
 
     <div class="section-title">운동 기록</div>
-    <div class="field">
-      <label>운동 내용</label>
-      <textarea id="exerciseNote" placeholder="예: 줄넘기 30분, 러닝 3km"></textarea>
+    <div class="add-ex-bar">
+      <div class="field">
+        <label>운동 종류</label>
+        <select id="exerciseType"></select>
+      </div>
+      <div class="field" style="max-width:90px;">
+        <label>시간 (분)</label>
+        <input type="number" step="1" min="0" id="exerciseMinutes" placeholder="30">
+      </div>
+      <button class="add-ex-btn" id="addExBtn">추가</button>
     </div>
-
-    <div class="section-title">영양 및 수분</div>
-    <div class="field">
-      <label>식단 내용</label>
-      <textarea id="nutritionNote" placeholder="예: 아침-계란 2개, 점심-..."></textarea>
-    </div>
-    <div class="field">
-      <label>수분 섭취량 (컵, 1컵 = 250ml)</label>
-      <input type="number" step="1" min="0" id="waterCups" placeholder="6">
-    </div>
+    <div class="added-list" id="addedList"></div>
 
     <p id="modalError" style="display:none; color:#f04452; font-size:13px; margin-top:4px;"></p>
 
@@ -327,21 +178,18 @@ body {
   </div>
 </div>
 
-<!-- 하단 네비게이션 -->
 <div class="bottom-nav">
   <a href="index.html" class="active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>기록</a>
   <a href="body.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>키/몸무게</a>
-  <a href="exercise.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5 17.5 17.5"/><path d="M21 21l-2-2"/><path d="M3 3l2 2"/><path d="M5 5l2-2"/><path d="M19 19l2-2"/><path d="M2.5 8.5l3-3"/><path d="M21.5 15.5l-3 3"/><path d="M8.5 2.5l-3 3"/><path d="M15.5 21.5l3-3"/></svg>운동기록</a>
-  <a href="nutrition.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M12 11V6"/><path d="M9 6h6"/></svg>영양/수분</a>
+  <a href="exercise.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5 17.5 17.5"/><path d="M21 21l-2-2"/><path d="M3 3l2 2"/><path d="M5 5l2-2"/><path d="M19 19l2-2"/><path d="M2.5 8.5l3-3"/><path d="M21.5 15.5l-3 3"/><path d="M8.5 2.5l-3 3"/><path d="M15.5 21.5l3-3"/></svg>운동</a>
   <a href="settings.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>설정</a>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// TODO: Firebase 콘솔에서 발급받은 본인의 설정값으로 교체하세요
 const firebaseConfig = {
   apiKey: "AIzaSyDl_CNpDZk4UPHp8s-EhG83Gsr1WPLaF9g",
   authDomain: "official-mn.firebaseapp.com",
@@ -355,14 +203,25 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// 운동별 분당 칼로리 (체중 60kg 기준 평균치)
+const EXERCISE_CAL_PER_MIN = {
+  "줄넘기": 11,
+  "러닝": 11.5,
+  "걷기": 4,
+  "사이클링": 7.5,
+  "수영": 9.5,
+  "등산": 8,
+  "요가": 3,
+  "농구": 8,
+  "축구": 9,
+  "피구": 6
+};
+
 function ensureAuth() {
   return new Promise((resolve) => {
     onAuthStateChanged(auth, (user) => {
-      if (user && user.emailVerified) {
-        resolve(user);
-      } else {
-        window.location.href = "login.html";
-      }
+      if (user && user.emailVerified) resolve(user);
+      else window.location.href = "login.html";
     });
   });
 }
@@ -389,18 +248,16 @@ async function getAllRecords() {
 let currentDate = new Date();
 currentDate.setHours(0,0,0,0);
 
+// 모달에서 추가 중인 운동 목록 (임시)
+let pendingExercises = [];
+
 function formatDateStr(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,"0");
-  const day = String(d.getDate()).padStart(2,"0");
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
 }
 function formatDisplay(d) {
   const days = ["일","월","화","수","목","금","토"];
-  return {
-    main: `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`,
-    sub: `${days[d.getDay()]}요일`
-  };
+  return { main: `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`, sub: `${days[d.getDay()]}요일` };
 }
 function isToday(d) {
   const t = new Date(); t.setHours(0,0,0,0);
@@ -418,12 +275,9 @@ const editBtn = document.getElementById("editBtn");
 const bodyRow = document.getElementById("bodyRow");
 const bodyValue = document.getElementById("bodyValue");
 const bodyDiff = document.getElementById("bodyDiff");
-const exerciseRow = document.getElementById("exerciseRow");
-const exerciseValue = document.getElementById("exerciseValue");
-const nutritionRow = document.getElementById("nutritionRow");
-const nutritionValue = document.getElementById("nutritionValue");
-const waterRow = document.getElementById("waterRow");
-const waterValue = document.getElementById("waterValue");
+const exerciseSection = document.getElementById("exerciseSection");
+const exerciseTotalValue = document.getElementById("exerciseTotalValue");
+const exerciseDetailList = document.getElementById("exerciseDetailList");
 const aiFeedbackText = document.getElementById("aiFeedbackText");
 const inputModal = document.getElementById("inputModal");
 const modalDateTitle = document.getElementById("modalDateTitle");
@@ -431,10 +285,21 @@ const cancelBtn = document.getElementById("cancelBtn");
 const saveBtn = document.getElementById("saveBtn");
 const heightInput = document.getElementById("heightInput");
 const weightInput = document.getElementById("weightInput");
-const exerciseNote = document.getElementById("exerciseNote");
-const nutritionNote = document.getElementById("nutritionNote");
-const waterCups = document.getElementById("waterCups");
+const exerciseType = document.getElementById("exerciseType");
+const exerciseMinutes = document.getElementById("exerciseMinutes");
+const addExBtn = document.getElementById("addExBtn");
+const addedList = document.getElementById("addedList");
 const modalError = document.getElementById("modalError");
+
+// 운동 드롭다운 채우기
+function fillExerciseOptions() {
+  let html = '<option value="">선택</option>';
+  Object.keys(EXERCISE_CAL_PER_MIN).forEach(name => {
+    html += `<option value="${name}">${name}</option>`;
+  });
+  exerciseType.innerHTML = html;
+}
+fillExerciseOptions();
 
 function updateDateUI() {
   const disp = formatDisplay(currentDate);
@@ -445,21 +310,17 @@ function updateDateUI() {
 
 prevDayBtn.addEventListener("click", () => {
   currentDate.setDate(currentDate.getDate() - 1);
-  updateDateUI();
-  loadRecord();
+  updateDateUI(); loadRecord();
 });
 nextDayBtn.addEventListener("click", () => {
   if (isToday(currentDate)) return;
   currentDate.setDate(currentDate.getDate() + 1);
-  updateDateUI();
-  loadRecord();
+  updateDateUI(); loadRecord();
 });
 
 async function getPreviousRecordWithBody(currentDateStr) {
   const all = await getAllRecords();
-  const dates = Object.keys(all)
-    .filter(d => d < currentDateStr && (all[d].height || all[d].weight))
-    .sort().reverse();
+  const dates = Object.keys(all).filter(d => d < currentDateStr && (all[d].height || all[d].weight)).sort().reverse();
   return dates.length ? all[dates[0]] : null;
 }
 
@@ -470,16 +331,18 @@ async function loadRecord() {
   if (!record) {
     emptyState.style.display = "block";
     filledState.style.display = "none";
-    aiFeedbackText.textContent = "기록을 저장하면 AI 피드백이 표시돼요.";
+    aiFeedbackText.textContent = "기록을 저장하면 피드백이 표시돼요.";
     aiFeedbackText.classList.add("placeholder");
-    [heightInput, weightInput, exerciseNote, nutritionNote, waterCups]
-      .forEach(el => el.value = "");
+    heightInput.value = ""; weightInput.value = "";
+    pendingExercises = [];
+    renderAddedList();
     return;
   }
 
   emptyState.style.display = "none";
   filledState.style.display = "block";
 
+  // 키/몸무게
   if (record.height || record.weight) {
     bodyRow.style.display = "flex";
     let txt = "";
@@ -493,19 +356,19 @@ async function loadRecord() {
       if (record.height && prev.height) {
         const diff = (record.height - prev.height).toFixed(1);
         if (diff != 0) {
-          const span = document.createElement("span");
-          span.className = diff > 0 ? "diff-up" : "diff-down";
-          span.textContent = ` ${diff > 0 ? "+" : ""}${diff}cm`;
-          bodyDiff.appendChild(span);
+          const s = document.createElement("span");
+          s.className = diff > 0 ? "diff-up" : "diff-down";
+          s.textContent = ` ${diff > 0 ? "+" : ""}${diff}cm`;
+          bodyDiff.appendChild(s);
         }
       }
       if (record.weight && prev.weight) {
         const diff = (record.weight - prev.weight).toFixed(1);
         if (diff != 0) {
-          const span = document.createElement("span");
-          span.className = diff < 0 ? "diff-down" : "diff-up";
-          span.textContent = ` ${diff > 0 ? "+" : ""}${diff}kg`;
-          bodyDiff.appendChild(span);
+          const s = document.createElement("span");
+          s.className = diff < 0 ? "diff-down" : "diff-up";
+          s.textContent = ` ${diff > 0 ? "+" : ""}${diff}kg`;
+          bodyDiff.appendChild(s);
         }
       }
     }
@@ -513,63 +376,52 @@ async function loadRecord() {
     bodyRow.style.display = "none";
   }
 
-  if (record.exerciseCalories != null) {
-    exerciseRow.style.display = "flex";
-    exerciseValue.textContent = `${record.exerciseCalories} kcal 소모`;
+  // 운동
+  const exercises = record.exercises || [];
+  if (exercises.length > 0) {
+    exerciseSection.style.display = "block";
+    const total = exercises.reduce((sum, e) => sum + e.calories, 0);
+    exerciseTotalValue.textContent = `${total} kcal`;
+    exerciseDetailList.innerHTML = exercises.map(e =>
+      `<div class="exercise-list-row">
+        <div>
+          <div class="ex-name">${e.type}</div>
+          <div class="ex-detail">${e.minutes}분</div>
+        </div>
+        <div class="ex-cal">${e.calories} kcal</div>
+      </div>`
+    ).join("");
   } else {
-    exerciseRow.style.display = "none";
+    exerciseSection.style.display = "none";
   }
 
-  if (record.nutritionCalories != null) {
-    nutritionRow.style.display = "flex";
-    nutritionValue.textContent = `${record.nutritionCalories} kcal 섭취`;
-  } else {
-    nutritionRow.style.display = "none";
-  }
+  generateFeedback(record);
 
-  if (record.waterCups != null) {
-    waterRow.style.display = "flex";
-    const ml = record.waterCups * 250;
-    waterValue.textContent = `${record.waterCups}컵 (${ml}ml)`;
-  } else {
-    waterRow.style.display = "none";
-  }
-
-  generateAiFeedback(record);
-
+  // 수정용 채우기
   heightInput.value = record.height || "";
   weightInput.value = record.weight || "";
-  exerciseNote.value = record.exerciseNote || "";
-  nutritionNote.value = record.nutritionNote || "";
-  waterCups.value = record.waterCups || "";
+  pendingExercises = exercises.map(e => ({...e}));
+  renderAddedList();
 }
 
-function generateAiFeedback(record) {
-  if (record.aiFeedback) {
-    aiFeedbackText.textContent = record.aiFeedback;
-    aiFeedbackText.classList.remove("placeholder");
-    return;
+function generateFeedback(record) {
+  const lines = [];
+  const exercises = record.exercises || [];
+  const total = exercises.reduce((sum, e) => sum + e.calories, 0);
+
+  if (total > 0) {
+    if (total >= 300) lines.push(`오늘 ${total}kcal나 소모했네요. 정말 활동적인 하루였어요!`);
+    else lines.push(`오늘 ${total}kcal를 소모했어요. 좋은 시작이에요.`);
+
+    if (exercises.length >= 3) lines.push(`${exercises.length}가지 운동을 했네요. 다양하게 움직인 게 멋져요.`);
   }
 
-  const lines = [];
-  if (record.exerciseCalories != null) {
-    const cal = Number(record.exerciseCalories);
-    if (cal >= 300) lines.push(`오늘 ${cal}kcal나 소모했네요. 정말 활동적인 하루였어요.`);
-    else if (cal > 0) lines.push(`오늘 ${cal}kcal를 소모했어요. 조금씩 늘려가 봐요!`);
+  if (record.weight) {
+    lines.push("꾸준히 기록하면 변화를 한눈에 볼 수 있어요.");
   }
-  if (record.nutritionCalories != null) {
-    const intake = Number(record.nutritionCalories);
-    const burned = Number(record.exerciseCalories) || 0;
-    lines.push(`섭취 칼로리는 ${intake}kcal예요.`);
-    if (burned > 0) lines.push(`순 칼로리(섭취-소모)는 약 ${intake - burned}kcal예요.`);
-  }
-  if (record.waterCups != null) {
-    const ml = record.waterCups * 250;
-    if (ml < 1000) lines.push("수분 섭취가 부족해 보여요. 물을 더 챙겨 마셔봐요.");
-    else if (ml >= 2000) lines.push("수분 섭취량이 훌륭해요.");
-  }
+
   if (lines.length === 0) {
-    aiFeedbackText.textContent = "기록을 저장하면 AI 피드백이 표시돼요.";
+    aiFeedbackText.textContent = "기록을 저장하면 피드백이 표시돼요.";
     aiFeedbackText.classList.add("placeholder");
   } else {
     aiFeedbackText.textContent = lines.join("\n");
@@ -577,9 +429,48 @@ function generateAiFeedback(record) {
   }
 }
 
+// 모달 내 운동 추가/삭제
+function renderAddedList() {
+  if (pendingExercises.length === 0) {
+    addedList.innerHTML = "";
+    return;
+  }
+  addedList.innerHTML = pendingExercises.map((e, i) =>
+    `<div class="added-item">
+      <span>${e.type} · ${e.minutes}분 · ${e.calories}kcal</span>
+      <button class="remove" data-idx="${i}">✕</button>
+    </div>`
+  ).join("");
+  addedList.querySelectorAll(".remove").forEach(btn => {
+    btn.addEventListener("click", () => {
+      pendingExercises.splice(Number(btn.dataset.idx), 1);
+      renderAddedList();
+    });
+  });
+}
+
+addExBtn.addEventListener("click", () => {
+  modalError.style.display = "none";
+  const type = exerciseType.value;
+  const minutes = Number(exerciseMinutes.value);
+  if (!type) { showError("운동 종류를 선택해주세요."); return; }
+  if (!minutes || minutes <= 0) { showError("운동 시간을 입력해주세요."); return; }
+  const calories = Math.round(EXERCISE_CAL_PER_MIN[type] * minutes);
+  pendingExercises.push({ type, minutes, calories });
+  exerciseType.value = "";
+  exerciseMinutes.value = "";
+  renderAddedList();
+});
+
+function showError(msg) {
+  modalError.textContent = msg;
+  modalError.style.display = "block";
+}
+
 function openModal() {
   const disp = formatDisplay(currentDate);
   modalDateTitle.textContent = `${disp.main} 기록`;
+  modalError.style.display = "none";
   inputModal.classList.add("show");
 }
 function closeModalFn() { inputModal.classList.remove("show"); }
@@ -590,102 +481,18 @@ cancelBtn.addEventListener("click", closeModalFn);
 inputModal.addEventListener("click", (e) => { if (e.target === inputModal) closeModalFn(); });
 
 saveBtn.addEventListener("click", async () => {
-  const apiKey = localStorage.getItem("mnhealth_api_key");
   const dateStr = formatDateStr(currentDate);
-
-  const baseRecord = {
+  const record = {
     height: heightInput.value ? Number(heightInput.value) : null,
     weight: weightInput.value ? Number(weightInput.value) : null,
-    exerciseNote: exerciseNote.value || "",
-    nutritionNote: nutritionNote.value || "",
-    waterCups: waterCups.value ? Number(waterCups.value) : null,
+    exercises: pendingExercises.map(e => ({...e})),
+    exerciseCalories: pendingExercises.reduce((sum, e) => sum + e.calories, 0),
     date: dateStr
   };
-
-  modalError.style.display = "none";
-
-  const needsAi = (baseRecord.exerciseNote || baseRecord.nutritionNote);
-
-  if (needsAi && !apiKey) {
-    modalError.textContent = "운동/식단 칼로리를 자동 계산하려면 설정에서 Claude API 키를 입력해주세요. (입력 없이도 키/몸무게/수분 기록은 저장돼요)";
-    modalError.style.display = "block";
-  }
-
-  if (needsAi && apiKey) {
-    saveBtn.disabled = true;
-    saveBtn.textContent = "계산 중...";
-    try {
-      const result = await callClaudeForRecord(apiKey, baseRecord);
-      baseRecord.exerciseCalories = result.exerciseCalories;
-      baseRecord.nutritionCalories = result.nutritionCalories;
-      baseRecord.aiFeedback = result.feedback;
-    } catch (err) {
-      modalError.textContent = "AI 계산 중 오류가 발생했어요: " + err.message;
-      modalError.style.display = "block";
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.textContent = "저장";
-    }
-  } else {
-    // 이전 AI 계산값이 있다면 유지 (수정 시 텍스트를 안 건드린 경우)
-    const prev = await getRecord(dateStr);
-    if (prev) {
-      baseRecord.exerciseCalories = baseRecord.exerciseNote ? prev.exerciseCalories : null;
-      baseRecord.nutritionCalories = baseRecord.nutritionNote ? prev.nutritionCalories : null;
-      baseRecord.aiFeedback = (baseRecord.exerciseNote || baseRecord.nutritionNote) ? prev.aiFeedback : null;
-    } else {
-      baseRecord.exerciseCalories = null;
-      baseRecord.nutritionCalories = null;
-      baseRecord.aiFeedback = null;
-    }
-  }
-
-  await saveRecord(dateStr, baseRecord);
+  await saveRecord(dateStr, record);
   closeModalFn();
   loadRecord();
 });
-
-async function callClaudeForRecord(apiKey, record) {
-  const prompt = `다음은 한 사용자의 하루 운동 및 식단 기록입니다.
-
-운동 내용: ${record.exerciseNote || "(없음)"}
-식단 내용: ${record.nutritionNote || "(없음)"}
-
-아래 JSON 형식으로만 응답하세요. 다른 텍스트나 마크다운 코드블록 없이 순수 JSON만 출력하세요.
-{
-  "exerciseCalories": 운동으로 소모한 예상 칼로리(kcal, 정수, 운동 내용이 없으면 null),
-  "nutritionCalories": 식단으로 섭취한 예상 칼로리(kcal, 정수, 식단 내용이 없으면 null),
-  "feedback": "친근한 말투의 한국어 피드백 2~4문장 (운동/식단/수분 섭취량을 종합해서 격려와 조언)"
-}
-
-참고로 수분 섭취량은 ${record.waterCups != null ? (record.waterCups * 250) + "ml" : "기록 없음"} 입니다.`;
-
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true"
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-5-20250929",
-      max_tokens: 500,
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
-
-  if (!response.ok) {
-    const errBody = await response.text();
-    throw new Error(`API 오류 (${response.status})`);
-  }
-
-  const data = await response.json();
-  const text = data.content.map(b => b.text || "").join("");
-  const clean = text.replace(/```json|```/g, "").trim();
-  const parsed = JSON.parse(clean);
-  return parsed;
-}
 
 (async function init() {
   currentUser = await ensureAuth();
