@@ -95,9 +95,10 @@ body {
 
   <div class="date-bar">
     <button id="prevDay">‹</button>
-    <div class="date-display">
+    <div class="date-display" id="dateDisplay" style="cursor:pointer; position:relative;">
       <div class="main" id="dateLabel">-</div>
       <div class="sub" id="dateSubLabel"></div>
+      <input type="date" id="datePicker" style="position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer;">
     </div>
     <button id="nextDay">›</button>
   </div>
@@ -114,6 +115,11 @@ body {
       <div class="record-row" id="bodyRow" style="display:none;">
         <span class="label">키 / 몸무게</span>
         <span class="value"><span id="bodyValue"></span><span id="bodyDiff"></span></span>
+      </div>
+
+      <div class="record-row" id="bmiRow" style="display:none;">
+        <span class="label">BMI</span>
+        <span class="value"><span id="bmiValue"></span><span id="bmiCategory" style="font-size:12px; font-weight:600; margin-left:6px;"></span></span>
       </div>
 
       <div id="exerciseSection" style="display:none;">
@@ -266,6 +272,7 @@ function isToday(d) {
 
 const dateLabel = document.getElementById("dateLabel");
 const dateSubLabel = document.getElementById("dateSubLabel");
+const datePicker = document.getElementById("datePicker");
 const prevDayBtn = document.getElementById("prevDay");
 const nextDayBtn = document.getElementById("nextDay");
 const emptyState = document.getElementById("emptyState");
@@ -275,6 +282,9 @@ const editBtn = document.getElementById("editBtn");
 const bodyRow = document.getElementById("bodyRow");
 const bodyValue = document.getElementById("bodyValue");
 const bodyDiff = document.getElementById("bodyDiff");
+const bmiRow = document.getElementById("bmiRow");
+const bmiValue = document.getElementById("bmiValue");
+const bmiCategory = document.getElementById("bmiCategory");
 const exerciseSection = document.getElementById("exerciseSection");
 const exerciseTotalValue = document.getElementById("exerciseTotalValue");
 const exerciseDetailList = document.getElementById("exerciseDetailList");
@@ -306,7 +316,23 @@ function updateDateUI() {
   dateLabel.textContent = disp.main;
   dateSubLabel.textContent = disp.sub;
   nextDayBtn.disabled = isToday(currentDate);
+  datePicker.value = formatDateStr(currentDate);
+  datePicker.max = formatDateStr(new Date());
 }
+
+datePicker.addEventListener("change", () => {
+  if (!datePicker.value) return;
+  const picked = new Date(datePicker.value + "T00:00:00");
+  const today = new Date(); today.setHours(0,0,0,0);
+  if (picked > today) {
+    updateDateUI(); // 미래 선택 무시, 원래 값 복구
+    return;
+  }
+  currentDate = picked;
+  currentDate.setHours(0,0,0,0);
+  updateDateUI();
+  loadRecord();
+});
 
 prevDayBtn.addEventListener("click", () => {
   currentDate.setDate(currentDate.getDate() - 1);
@@ -376,8 +402,17 @@ async function loadRecord() {
     bodyRow.style.display = "none";
   }
 
-  // 운동
-  const exercises = record.exercises || [];
+  // BMI (키와 몸무게가 모두 있을 때)
+  if (record.height && record.weight) {
+    const bmi = computeBMI(record.height, record.weight);
+    const cat = bmiCategory_(bmi);
+    bmiRow.style.display = "flex";
+    bmiValue.textContent = bmi.toFixed(1);
+    bmiCategory.textContent = cat.label;
+    bmiCategory.style.color = cat.color;
+  } else {
+    bmiRow.style.display = "none";
+  }
   if (exercises.length > 0) {
     exerciseSection.style.display = "block";
     const total = exercises.reduce((sum, e) => sum + e.calories, 0);
@@ -404,20 +439,91 @@ async function loadRecord() {
   renderAddedList();
 }
 
+function computeBMI(heightCm, weightKg) {
+  const m = heightCm / 100;
+  return weightKg / (m * m);
+}
+
+// 대한비만학회 아시아-태평양 기준
+function bmiCategory_(bmi) {
+  if (bmi < 18.5) return { label: "저체중", color: "#3182f6" };
+  if (bmi < 23)   return { label: "정상", color: "#00c896" };
+  if (bmi < 25)   return { label: "과체중", color: "#f5a623" };
+  if (bmi < 30)   return { label: "비만", color: "#f04452" };
+  return { label: "고도비만", color: "#d0021b" };
+}
+
+function pick(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 function generateFeedback(record) {
   const lines = [];
   const exercises = record.exercises || [];
   const total = exercises.reduce((sum, e) => sum + e.calories, 0);
 
+  // 운동 피드백
   if (total > 0) {
-    if (total >= 300) lines.push(`오늘 ${total}kcal나 소모했네요. 정말 활동적인 하루였어요!`);
-    else lines.push(`오늘 ${total}kcal를 소모했어요. 좋은 시작이에요.`);
+    if (total >= 500) {
+      lines.push(pick([
+        `와, 오늘 ${total}kcal 소모! 운동 좀 치는데요? 🔥`,
+        `${total}kcal라니, 오늘은 거의 운동선수급이에요!`,
+        `${total}kcal 불태웠어요. 오늘 하루 정말 열심히 움직였네요.`
+      ]));
+    } else if (total >= 300) {
+      lines.push(pick([
+        `오늘 ${total}kcal 소모했어요. 활동적인 하루였네요!`,
+        `${total}kcal면 꽤 알찬 운동량이에요. 좋아요!`,
+        `${total}kcal 소모 완료. 이 페이스 유지해봐요.`
+      ]));
+    } else if (total >= 100) {
+      lines.push(pick([
+        `${total}kcal 소모했어요. 가볍게 몸 풀기 좋았겠네요.`,
+        `오늘은 ${total}kcal. 조금씩 늘려가면 더 좋아요!`,
+        `${total}kcal, 안 한 것보단 훨씬 나아요. 잘했어요.`
+      ]));
+    } else {
+      lines.push(pick([
+        `${total}kcal 소모. 워밍업 정도였네요, 다음엔 조금 더!`,
+        `오늘은 ${total}kcal. 내일은 한 단계 올려볼까요?`
+      ]));
+    }
 
-    if (exercises.length >= 3) lines.push(`${exercises.length}가지 운동을 했네요. 다양하게 움직인 게 멋져요.`);
+    // 운동 종류 다양성
+    const uniqueTypes = new Set(exercises.map(e => e.type)).size;
+    if (uniqueTypes >= 3) {
+      lines.push(`${uniqueTypes}가지 운동을 골고루 했네요. 균형 잡힌 운동이에요.`);
+    }
+
+    // 가장 오래 한 운동
+    const longest = exercises.reduce((a, b) => (b.minutes > a.minutes ? b : a), exercises[0]);
+    if (longest.minutes >= 60) {
+      lines.push(`${longest.type}을(를) ${longest.minutes}분이나 했어요. 대단한 집중력!`);
+    }
+  } else {
+    lines.push(pick([
+      "오늘은 운동 기록이 없네요. 가볍게 산책이라도 어때요?",
+      "운동 기록을 추가해보세요. 작은 움직임도 쌓이면 큰 변화예요.",
+      "오늘은 쉬어가는 날인가요? 내일은 몸을 한번 움직여봐요."
+    ]));
   }
 
-  if (record.weight) {
-    lines.push("꾸준히 기록하면 변화를 한눈에 볼 수 있어요.");
+  // BMI 피드백
+  if (record.height && record.weight) {
+    const bmi = computeBMI(record.height, record.weight);
+    const cat = bmiCategory_(bmi);
+    if (cat.label === "정상") {
+      lines.push(pick([
+        `BMI ${bmi.toFixed(1)}, 정상 범위예요. 지금처럼 잘 관리하고 있어요!`,
+        `BMI ${bmi.toFixed(1)}로 건강한 상태네요. 좋은 습관 계속 이어가요.`
+      ]));
+    } else if (cat.label === "저체중") {
+      lines.push(`BMI ${bmi.toFixed(1)}, 저체중이에요. 영양을 충분히 챙기는 게 좋아요.`);
+    } else if (cat.label === "과체중") {
+      lines.push(`BMI ${bmi.toFixed(1)}, 과체중 범위예요. 꾸준한 운동이 도움이 될 거예요.`);
+    } else {
+      lines.push(`BMI ${bmi.toFixed(1)}이에요. 무리하지 않는 선에서 운동량을 늘려봐요.`);
+    }
   }
 
   if (lines.length === 0) {

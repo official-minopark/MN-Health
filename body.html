@@ -53,8 +53,13 @@ body {
   </div>
 
   <div class="card" id="chartCard">
-    <h3>변화 추이</h3>
-    <canvas id="mainChart"></canvas>
+    <h3>키 변화 (cm)</h3>
+    <canvas id="heightChart"></canvas>
+  </div>
+
+  <div class="card" id="chartCard2">
+    <h3>몸무게 변화 (kg)</h3>
+    <canvas id="weightChart"></canvas>
   </div>
 
   <div class="no-data" id="noData" style="display:none;">저장된 키/몸무게 기록이 없어요</div>
@@ -112,12 +117,15 @@ function formatDateStr(d) {
   return `${y}-${m}-${day}`;
 }
 
-const ctx = document.getElementById("mainChart").getContext("2d");
+const heightCtx = document.getElementById("heightChart").getContext("2d");
+const weightCtx = document.getElementById("weightChart").getContext("2d");
 const noDataEl = document.getElementById("noData");
 const chartCard = document.getElementById("chartCard");
+const chartCard2 = document.getElementById("chartCard2");
 const rangeBtns = document.querySelectorAll(".range-tabs button");
 let currentRange = "month";
-let chartInstance = null;
+let heightChartInstance = null;
+let weightChartInstance = null;
 
 rangeBtns.forEach(btn => {
   btn.addEventListener("click", () => {
@@ -127,6 +135,31 @@ rangeBtns.forEach(btn => {
     render();
   });
 });
+
+function makeChart(ctx, instance, labels, data, label, color) {
+  if (instance) instance.destroy();
+  return new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label,
+        data,
+        borderColor: color,
+        backgroundColor: color + "33",
+        tension: 0.3, spanGaps: true, pointRadius: 3, fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: "#8b95a1" }, grid: { color: "#f2f4f6" } },
+        y: { ticks: { color: "#8b95a1" }, grid: { color: "#f2f4f6" } }
+      }
+    }
+  });
+}
 
 async function render() {
   const all = await getAllRecords();
@@ -142,10 +175,12 @@ async function render() {
 
   if (dates.length === 0) {
     chartCard.style.display = "none";
+    chartCard2.style.display = "none";
     noDataEl.style.display = "block";
     return;
   }
   chartCard.style.display = "block";
+  chartCard2.style.display = "block";
   noDataEl.style.display = "none";
 
   const labels = dates.map(d => {
@@ -153,38 +188,10 @@ async function render() {
     return currentRange === "month" ? `${dt.getMonth()+1}/${dt.getDate()}` : `${dt.getFullYear()}.${dt.getMonth()+1}`;
   });
 
-  if (chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "키 (cm)",
-          data: dates.map(d => all[d].height ?? null),
-          borderColor: "#3182f6",
-          backgroundColor: "#3182f633",
-          tension: 0.3, spanGaps: true, pointRadius: 3, yAxisID: "y"
-        },
-        {
-          label: "몸무게 (kg)",
-          data: dates.map(d => all[d].weight ?? null),
-          borderColor: "#00d2b3",
-          backgroundColor: "#00d2b333",
-          tension: 0.3, spanGaps: true, pointRadius: 3, yAxisID: "y1"
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { labels: { color: "#191f28" } } },
-      scales: {
-        x: { ticks: { color: "#8b95a1" }, grid: { color: "#f2f4f6" } },
-        y: { position: "left", ticks: { color: "#8b95a1" }, grid: { color: "#f2f4f6" }, title: { display: true, text: "키 (cm)", color: "#8b95a1" } },
-        y1: { position: "right", ticks: { color: "#8b95a1" }, grid: { display: false }, title: { display: true, text: "몸무게 (kg)", color: "#8b95a1" } }
-      }
-    }
-  });
+  heightChartInstance = makeChart(heightCtx, heightChartInstance, labels,
+    dates.map(d => all[d].height ?? null), "키 (cm)", "#3182f6");
+  weightChartInstance = makeChart(weightCtx, weightChartInstance, labels,
+    dates.map(d => all[d].weight ?? null), "몸무게 (kg)", "#00d2b3");
 }
 
 (async function init() {
