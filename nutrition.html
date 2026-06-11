@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MN Health - 영양/수분</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f5f6f8; --card: #ffffff; --primary: #3182f6;
+  --mint: #00d2b3; --text: #191f28; --text-sub: #8b95a1; --border: #f2f4f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 76px;
+}
+.app-header { padding: 20px 20px 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.container { flex: 1; width: 100%; max-width: 480px; margin: 0 auto; padding: 8px 20px; }
+.range-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.range-tabs button {
+  flex: 1; background: var(--card); border: none; color: var(--text-sub);
+  padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.range-tabs button.active { background: var(--primary); color: #fff; }
+.card { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 12px; }
+.card h3 { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+.no-data { text-align: center; color: var(--text-sub); font-size: 14px; padding: 60px 10px; }
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; display: flex;
+  background: var(--card); border-top: 1px solid var(--border);
+  max-width: 480px; margin: 0 auto; padding-bottom: env(safe-area-inset-bottom);
+}
+.bottom-nav a {
+  flex: 1; text-align: center; padding: 10px 4px; text-decoration: none;
+  color: var(--text-sub); font-size: 11px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.bottom-nav a .icon { font-size: 20px; }
+.bottom-nav a svg { display: block; }
+.bottom-nav a.active { color: var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="app-header">영양 / 수분</div>
+
+<div class="container">
+  <div class="range-tabs">
+    <button data-range="month" class="active">최근 1개월</button>
+    <button data-range="year">최근 1년</button>
+  </div>
+
+  <div class="card" id="chartCard">
+    <h3>섭취 칼로리 / 수분 섭취량</h3>
+    <canvas id="mainChart"></canvas>
+  </div>
+
+  <div class="no-data" id="noData" style="display:none;">저장된 영양/수분 기록이 없어요</div>
+</div>
+
+<div class="bottom-nav">
+  <a href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>기록</a>
+  <a href="body.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>키/몸무게</a>
+  <a href="exercise.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5 17.5 17.5"/><path d="M21 21l-2-2"/><path d="M3 3l2 2"/><path d="M5 5l2-2"/><path d="M19 19l2-2"/><path d="M2.5 8.5l3-3"/><path d="M21.5 15.5l-3 3"/><path d="M8.5 2.5l-3 3"/><path d="M15.5 21.5l3-3"/></svg>운동기록</a>
+  <a href="nutrition.html" class="active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-18 0Z"/><path d="M12 11V6"/><path d="M9 6h6"/></svg>영양/수분</a>
+  <a href="settings.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>설정</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// TODO: Firebase 콘솔에서 발급받은 본인의 설정값으로 교체하세요
+const firebaseConfig = {
+  apiKey: "AIzaSyDl_CNpDZk4UPHp8s-EhG83Gsr1WPLaF9g",
+  authDomain: "official-mn.firebaseapp.com",
+  projectId: "official-mn",
+  storageBucket: "official-mn.firebasestorage.app",
+  messagingSenderId: "892732440943",
+  appId: "1:892732440943:web:a4db28f12e17bd7c76e89a"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+function ensureAuth() {
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.emailVerified) {
+        resolve(user);
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  });
+}
+
+let currentUser = null;
+
+async function getAllRecords() {
+  if (!currentUser) return {};
+  const snap = await getDocs(collection(db, "users", currentUser.uid, "records"));
+  const result = {};
+  snap.forEach(d => { result[d.id] = d.data(); });
+  return result;
+}
+
+const ctx = document.getElementById("mainChart").getContext("2d");
+const noDataEl = document.getElementById("noData");
+const chartCard = document.getElementById("chartCard");
+const rangeBtns = document.querySelectorAll(".range-tabs button");
+let currentRange = "month";
+let chartInstance = null;
+
+rangeBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    rangeBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentRange = btn.dataset.range;
+    render();
+  });
+});
+
+async function render() {
+  const all = await getAllRecords();
+  const end = new Date(); end.setHours(0,0,0,0);
+  const start = new Date(end);
+  if (currentRange === "month") start.setDate(start.getDate() - 29);
+  else start.setFullYear(start.getFullYear() - 1);
+
+  const dates = Object.keys(all)
+    .filter(d => { const dd = new Date(d); return dd >= start && dd <= end; })
+    .filter(d => all[d].nutritionCalories != null || all[d].waterCups != null)
+    .sort();
+
+  if (dates.length === 0) {
+    chartCard.style.display = "none";
+    noDataEl.style.display = "block";
+    return;
+  }
+  chartCard.style.display = "block";
+  noDataEl.style.display = "none";
+
+  const labels = dates.map(d => {
+    const dt = new Date(d);
+    return currentRange === "month" ? `${dt.getMonth()+1}/${dt.getDate()}` : `${dt.getFullYear()}.${dt.getMonth()+1}`;
+  });
+
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "섭취 칼로리 (kcal)",
+          data: dates.map(d => all[d].nutritionCalories ?? null),
+          borderColor: "#3182f6",
+          backgroundColor: "#3182f633",
+          tension: 0.3, spanGaps: true, pointRadius: 3, yAxisID: "y"
+        },
+        {
+          label: "수분 섭취량 (ml)",
+          data: dates.map(d => all[d].waterCups != null ? all[d].waterCups * 250 : null),
+          borderColor: "#00d2b3",
+          backgroundColor: "#00d2b333",
+          tension: 0.3, spanGaps: true, pointRadius: 3, yAxisID: "y1"
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: "#191f28" } } },
+      scales: {
+        x: { ticks: { color: "#8b95a1" }, grid: { color: "#f2f4f6" } },
+        y: { position: "left", ticks: { color: "#8b95a1" }, grid: { color: "#f2f4f6" }, title: { display: true, text: "kcal", color: "#8b95a1" } },
+        y1: { position: "right", ticks: { color: "#8b95a1" }, grid: { display: false }, title: { display: true, text: "ml", color: "#8b95a1" } }
+      }
+    }
+  });
+}
+
+(async function init() {
+  currentUser = await ensureAuth();
+  render();
+})();
+</script>
+</body>
+</html>

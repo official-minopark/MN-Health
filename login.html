@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 — MN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #1d1d1f;
+      --gray: #6e6e73;
+      --light: #f5f5f7;
+      --white: #ffffff;
+      --blue: #0071e3;
+      --red: #ff3b30;
+    }
+    body {
+      font-family: 'Noto Sans KR', -apple-system, sans-serif;
+      font-weight: 300;
+      background: var(--white);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+    }
+
+    /* 로고 */
+    .logo {
+      height: 24px;
+      width: auto;
+      margin-bottom: 48px;
+    }
+
+    /* 카드 */
+    .card {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* 탭 */
+    .tabs {
+      display: flex;
+      border-bottom: 0.5px solid rgba(0,0,0,0.1);
+      margin-bottom: 36px;
+      gap: 0;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--gray);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      letter-spacing: -0.01em;
+    }
+    .tab.active {
+      color: var(--black);
+      border-bottom-color: var(--black);
+    }
+
+    /* 폼 */
+    .form { display: flex; flex-direction: column; gap: 12px; }
+    .form.hidden { display: none; }
+
+    .input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-label {
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: -0.01em;
+    }
+    .input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid rgba(0,0,0,0.15);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--black);
+      background: var(--light);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input:focus {
+      border-color: rgba(0,113,227,0.5);
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.1);
+      background: var(--white);
+    }
+    .input.error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(255,59,48,0.1);
+    }
+
+    /* 버튼 */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:active { transform: scale(0.99); }
+    .btn-primary { background: var(--black); color: var(--white); }
+    .btn-google {
+      background: var(--white);
+      color: var(--black);
+      border: 1px solid rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 0;
+    }
+
+    /* 구분선 */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .divider-line {
+      flex: 1;
+      height: 0.5px;
+      background: rgba(0,0,0,0.1);
+    }
+    .divider-text {
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 0.04em;
+    }
+
+    /* 에러 메시지 */
+    .error-msg {
+      font-size: 12px;
+      color: var(--red);
+      letter-spacing: -0.01em;
+      min-height: 18px;
+      margin-top: -4px;
+    }
+
+    /* 비밀번호 조건 */
+    .pw-rules {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .rule {
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: -0.01em;
+      transition: color 0.2s;
+    }
+    .rule.pass {
+      color: #34C759;
+    }
+    .rule.pass::first-letter {
+      content: "✓";
+    }
+
+    /* 뒤로가기 */
+    .back {
+      margin-top: 40px;
+      font-size: 12px;
+      color: var(--gray);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      transition: color 0.2s;
+    }
+    .back:hover { color: var(--black); }
+
+    /* 로딩 스피너 */
+    .btn.loading { opacity: 0.6; pointer-events: none; }
+    /* 비밀번호 찾기 링크 */
+    .forgot-pw {
+      font-size: 12px;
+      color: var(--gray);
+      text-align: right;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+      transition: color 0.2s;
+      margin-top: -4px;
+    }
+    .forgot-pw:hover { color: var(--blue); }
+
+    /* 개인정보 동의 */
+    .agree-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .agree-wrap input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+      accent-color: var(--black);
+    }
+    .agree-label {
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: -0.01em;
+      line-height: 1.6;
+    }
+    .agree-label a {
+      color: var(--black);
+      text-decoration: underline;
+    }
+
+    /* 비밀번호 찾기 화면 */
+    .reset-form { display: none; flex-direction: column; gap: 12px; }
+    .reset-form.active { display: flex; }
+    .reset-title {
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .reset-desc {
+      font-size: 13px;
+      color: var(--gray);
+      letter-spacing: -0.01em;
+      line-height: 1.6;
+      margin-bottom: 4px;
+    }
+    .success-msg {
+      font-size: 12px;
+      color: #34C759;
+      letter-spacing: -0.01em;
+      min-height: 18px;
+    }
+
+
+    /* ── 모바일 반응형 ── */
+    @media (max-width: 480px) {
+      body { padding: 32px 16px; }
+
+      .card { max-width: 100%; }
+
+      .input { padding: 12px 14px; font-size: 16px; /* iOS 줌 방지 */ }
+
+      .btn { padding: 14px; font-size: 15px; }
+
+      .logo { height: 20px; margin-bottom: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <img src="data:image/png;base64,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" class="logo" alt="MN">
+
+  <div class="card">
+    <!-- 비밀번호 찾기 화면 -->
+    <div class="reset-form" id="reset-form">
+      <p class="reset-title">비밀번호 찾기</p>
+      <p class="reset-desc">가입하신 이메일 주소를 입력하시면<br>비밀번호 재설정 링크를 보내드려요.</p>
+      <div class="input-wrap">
+        <label class="input-label">이메일</label>
+        <input class="input" id="reset-email" type="email" autocomplete="email" placeholder="이메일 주소">
+      </div>
+      <p class="success-msg" id="reset-success"></p>
+      <p class="error-msg" id="reset-error"></p>
+      <button class="btn btn-primary" onclick="handleReset()">재설정 링크 보내기</button>
+      <button class="btn" onclick="hideReset()" style="background:none; border:1px solid rgba(0,0,0,0.15); color:var(--gray); margin-top:0;">← 로그인으로 돌아가기</button>
+    </div>
+
+    <!-- 탭 -->
+    <div class="tabs" id="tabs">
+      <div class="tab active" id="tab-login" onclick="switchTab('login')">로그인</div>
+      <div class="tab" id="tab-signup" onclick="switchTab('signup')">회원가입</div>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <div class="form" id="form-login">
+      <div class="input-wrap">
+        <label class="input-label">이메일</label>
+        <input class="input" id="login-email" type="email" autocomplete="email" placeholder="이메일 주소">
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">비밀번호</label>
+        <input class="input" id="login-pw" type="password" autocomplete="current-password" placeholder="비밀번호">
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:-4px;">
+        <span class="forgot-pw" onclick="showReset()">비밀번호를 잊으셨나요?</span>
+      </div>
+      <p class="error-msg" id="login-error"></p>
+      <button id="resend-btn" onclick="resendVerification()" style="display:none; margin-top:8px; background:none; border:none; color:#0071e3; font-size:13px; cursor:pointer; font-family:inherit; letter-spacing:-0.01em;">인증 메일 재발송</button>
+      <button class="btn btn-primary" onclick="handleLogin()">로그인</button>
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">또는</span>
+        <div class="divider-line"></div>
+      </div>
+      <button class="btn btn-google" onclick="handleGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+        Google로 계속하기
+      </button>
+    </div>
+
+    <!-- 회원가입 폼 -->
+    <div class="form hidden" id="form-signup">
+      <div class="input-wrap">
+        <label class="input-label">이메일</label>
+        <input class="input" id="signup-email" type="email" autocomplete="email" placeholder="이메일 주소">
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">비밀번호</label>
+        <input class="input" id="signup-pw" type="password" autocomplete="new-password" placeholder="비밀번호 (8자 이상)" oninput="checkPwStrength(this.value)">
+        <div class="pw-rules" id="pw-rules">
+          <span class="rule" id="rule-len">✕ 8자 이상</span>
+          <span class="rule" id="rule-upper">✕ 대/소문자 포함</span>
+          <span class="rule" id="rule-num">✕ 숫자 포함</span>
+          <span class="rule" id="rule-special">✕ 특수 기호 포함</span>
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">비밀번호 확인</label>
+        <input class="input" id="signup-pw2" type="password" autocomplete="new-password" placeholder="비밀번호 재입력">
+      </div>
+      <div class="agree-wrap">
+        <input type="checkbox" id="agree-privacy">
+        <label class="agree-label" for="agree-privacy">
+          <a href="privacy.html" target="_blank">개인정보처리방침</a>을 읽었으며 동의합니다.
+        </label>
+      </div>
+      <p class="error-msg" id="signup-error"></p>
+      <button class="btn btn-primary" onclick="handleSignup()">회원가입</button>
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">또는</span>
+        <div class="divider-line"></div>
+      </div>
+      <button class="btn btn-google" onclick="handleGoogle()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/></svg>
+        Google로 계속하기
+      </button>
+    </div>
+  </div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyDl_CNpDZk4UPHp8s-EhG83Gsr1WPLaF9g",
+    authDomain: "official-mn.firebaseapp.com",
+    projectId: "official-mn",
+    storageBucket: "official-mn.firebasestorage.app",
+    messagingSenderId: "892732440943",
+    appId: "1:892732440943:web:a4db28f12e17bd7c76e89a"
+  });
+  const auth = getAuth(app);
+
+  // 이미 로그인 중이면 index로 (이메일 인증된 계정만)
+  onAuthStateChanged(auth, user => {
+    if (user && user.emailVerified) window.location.href = 'index.html';
+  });
+
+  function switchTab(tab) {
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    const loginForm = document.getElementById('form-login');
+    const signupForm = document.getElementById('form-signup');
+    // style.display 초기화 후 hidden 클래스로만 제어
+    loginForm.style.display = '';
+    signupForm.style.display = '';
+    loginForm.classList.toggle('hidden', tab !== 'login');
+    signupForm.classList.toggle('hidden', tab !== 'signup');
+  }
+
+  async function handleLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pw    = document.getElementById('login-pw').value;
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = '';
+    if (!email || !pw) { errEl.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, pw);
+      if (!result.user.emailVerified) {
+        await auth.signOut();
+        errEl.textContent = '이메일 인증이 필요해요. 받은편지함을 확인해주세요.';
+        // 재발송 버튼 표시
+        document.getElementById('resend-btn').style.display = 'inline-block';
+        window._unverifiedUser = result.user;
+        return;
+      }
+      window.location.href = 'index.html';
+    } catch (e) {
+      if (e.code === 'auth/user-not-found' || e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential')
+        errEl.textContent = '이메일 또는 비밀번호가 올바르지 않아요.';
+      else if (e.code === 'auth/invalid-email')
+        errEl.textContent = '올바른 이메일 형식이 아니에요.';
+      else
+        errEl.textContent = '로그인 중 오류가 발생했어요.';
+    }
+  }
+
+  function validatePw(pw) {
+    if (pw.length < 8)             return { valid: false, msg: '비밀번호는 8자 이상이어야 해요.' };
+    if (!/[a-z]/.test(pw))         return { valid: false, msg: '소문자를 포함해야 해요.' };
+    if (!/[A-Z]/.test(pw))         return { valid: false, msg: '대문자를 포함해야 해요.' };
+    if (!/[0-9]/.test(pw))         return { valid: false, msg: '숫자를 포함해야 해요.' };
+    if (!/[^a-zA-Z0-9]/.test(pw))  return { valid: false, msg: '특수 기호를 포함해야 해요.' };
+    return { valid: true };
+  }
+
+  function checkPwStrength(pw) {
+    const lenEl     = document.getElementById('rule-len');
+    const upperEl   = document.getElementById('rule-upper');
+    const numEl     = document.getElementById('rule-num');
+    const specialEl = document.getElementById('rule-special');
+    if (!lenEl) return;
+    const lenOk     = pw.length >= 8;
+    const upperOk   = /[a-z]/.test(pw) && /[A-Z]/.test(pw);
+    const numOk     = /[0-9]/.test(pw);
+    const specialOk = /[^a-zA-Z0-9]/.test(pw);
+    lenEl.textContent     = (lenOk     ? '✓' : '✕') + ' 8자 이상';
+    upperEl.textContent   = (upperOk   ? '✓' : '✕') + ' 대/소문자 포함';
+    numEl.textContent     = (numOk     ? '✓' : '✕') + ' 숫자 포함';
+    specialEl.textContent = (specialOk ? '✓' : '✕') + ' 특수 기호 포함';
+    lenEl.className     = 'rule' + (lenOk     ? ' pass' : '');
+    upperEl.className   = 'rule' + (upperOk   ? ' pass' : '');
+    numEl.className     = 'rule' + (numOk     ? ' pass' : '');
+    specialEl.className = 'rule' + (specialOk ? ' pass' : '');
+  }
+
+  async function handleSignup() {
+    const email = document.getElementById('signup-email').value.trim();
+    const pw    = document.getElementById('signup-pw').value;
+    const pw2   = document.getElementById('signup-pw2').value;
+    const errEl = document.getElementById('signup-error');
+    errEl.textContent = '';
+    const agreeEl = document.getElementById('agree-privacy');
+    if (!agreeEl.checked) { errEl.textContent = '개인정보처리방침에 동의해주세요.'; return; }
+    if (!email || !pw || !pw2) { errEl.textContent = '모든 항목을 입력해주세요.'; return; }
+    if (pw !== pw2) { errEl.textContent = '비밀번호가 일치하지 않아요.'; return; }
+    const pwValid = validatePw(pw);
+    if (!pwValid.valid) { errEl.textContent = pwValid.msg; return; }
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, pw);
+      await sendEmailVerification(result.user);
+      await auth.signOut();
+      // 회원가입 폼 숨기고 안내 메시지 표시
+      document.getElementById('form-signup').style.display = 'none';
+      // card 숨기고 인증 안내 동적 생성
+      const card = document.querySelector('.card');
+      card.style.display = 'none';
+      const notice = document.createElement('div');
+      notice.style.cssText = 'text-align:center;max-width:400px;width:100%;';
+      notice.innerHTML = `
+        <div style="font-size:48px;margin-bottom:20px;">📧</div>
+        <h2 style="font-size:20px;font-weight:500;letter-spacing:-0.02em;color:#1d1d1f;margin-bottom:12px;">이메일을 확인해주세요</h2>
+        <p style="font-size:14px;color:#6e6e73;line-height:1.7;margin-bottom:32px;">가입하신 이메일로 인증 링크를 보냈어요.<br>인증 후 로그인해주세요.</p>
+        <button onclick="this.parentNode.remove();document.querySelector('.card').style.display='flex';window.switchTab('login');" style="background:#1d1d1f;color:#fff;border:none;padding:14px 32px;border-radius:980px;font-size:14px;cursor:pointer;font-family:inherit;">로그인하러 가기</button>
+      `;
+      card.parentNode.insertBefore(notice, card.nextSibling);
+      return;
+    } catch (e) {
+      if (e.code === 'auth/email-already-in-use')
+        errEl.textContent = '이미 사용 중인 이메일이에요.';
+      else if (e.code === 'auth/invalid-email')
+        errEl.textContent = '올바른 이메일 형식이 아니에요.';
+      else
+        errEl.textContent = '회원가입 중 오류가 발생했어요.';
+    }
+  }
+
+  async function handleGoogle() {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = 'index.html';
+    } catch (e) {
+      const errEl = document.getElementById('login-error');
+      if (errEl) errEl.textContent = '구글 로그인 오류: ' + e.code;
+      console.error(e);
+    }
+  }
+
+  async function resendVerification() {
+    try {
+      await signInWithEmailAndPassword(auth, 
+        document.getElementById('login-email').value.trim(),
+        document.getElementById('login-pw').value
+      );
+      await sendEmailVerification(auth.currentUser);
+      await auth.signOut();
+      document.getElementById('login-error').textContent = '인증 메일을 재발송했어요!';
+      document.getElementById('resend-btn').style.display = 'none';
+    } catch(e) {
+      document.getElementById('login-error').textContent = '재발송 실패: ' + e.code;
+    }
+  }
+
+  // 비밀번호 찾기
+  function showReset() {
+    document.getElementById('reset-form').classList.add('active');
+    document.getElementById('tabs').style.display = 'none';
+    document.getElementById('form-login').classList.add('hidden');
+    document.getElementById('form-login').style.display = '';
+    document.getElementById('reset-email').value = '';
+    document.getElementById('reset-success').textContent = '';
+    document.getElementById('reset-error').textContent = '';
+  }
+
+  function hideReset() {
+    document.getElementById('reset-form').classList.remove('active');
+    document.getElementById('tabs').style.display = 'flex';
+    document.getElementById('form-login').classList.remove('hidden');
+    document.getElementById('form-login').style.display = '';
+  }
+
+  async function handleReset() {
+    const { sendPasswordResetEmail } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+    const email = document.getElementById('reset-email').value.trim();
+    const errEl = document.getElementById('reset-error');
+    const sucEl = document.getElementById('reset-success');
+    errEl.textContent = '';
+    sucEl.textContent = '';
+    if (!email) { errEl.textContent = '이메일을 입력해주세요.'; return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      sucEl.textContent = '재설정 링크를 보냈어요. 받은편지함을 확인해주세요.';
+    } catch(e) {
+      if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential')
+        errEl.textContent = '등록되지 않은 이메일이에요.';
+      else if (e.code === 'auth/invalid-email')
+        errEl.textContent = '올바른 이메일 형식이 아니에요.';
+      else
+        errEl.textContent = '오류가 발생했어요. 다시 시도해주세요.';
+    }
+  }
+
+  // 전역 함수 등록
+  window.switchTab = switchTab;
+  window.showReset = showReset;
+  window.hideReset = hideReset;
+  window.handleReset = handleReset;
+  window.handleLogin = handleLogin;
+  window.handleSignup = handleSignup;
+  window.handleGoogle = handleGoogle;
+  window.checkPwStrength = checkPwStrength;
+  window.resendVerification = resendVerification;
+
+
+  // 엔터키 지원
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const loginHidden = document.getElementById('form-login').classList.contains('hidden');
+    if (!loginHidden) handleLogin();
+    else handleSignup();
+  });
+</script>
+</body>
+</html>
