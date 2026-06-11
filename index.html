@@ -413,6 +413,9 @@ async function loadRecord() {
   } else {
     bmiRow.style.display = "none";
   }
+
+  // 운동
+  const exercises = record.exercises || [];
   if (exercises.length > 0) {
     exerciseSection.style.display = "block";
     const total = exercises.reduce((sum, e) => sum + e.calories, 0);
@@ -587,10 +590,22 @@ cancelBtn.addEventListener("click", closeModalFn);
 inputModal.addEventListener("click", (e) => { if (e.target === inputModal) closeModalFn(); });
 
 saveBtn.addEventListener("click", async () => {
+  modalError.style.display = "none";
   const dateStr = formatDateStr(currentDate);
+
+  const hasHeight = heightInput.value.trim() !== "";
+  const hasWeight = weightInput.value.trim() !== "";
+  const hasExercise = pendingExercises.length > 0;
+
+  // 아무것도 입력 안 했으면 저장 막기
+  if (!hasHeight && !hasWeight && !hasExercise) {
+    showError("키, 몸무게, 운동 중 하나 이상은 입력해주세요.");
+    return;
+  }
+
   const record = {
-    height: heightInput.value ? Number(heightInput.value) : null,
-    weight: weightInput.value ? Number(weightInput.value) : null,
+    height: hasHeight ? Number(heightInput.value) : null,
+    weight: hasWeight ? Number(weightInput.value) : null,
     exercises: pendingExercises.map(e => ({...e})),
     exerciseCalories: pendingExercises.reduce((sum, e) => sum + e.calories, 0),
     date: dateStr
