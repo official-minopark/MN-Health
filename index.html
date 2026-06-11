@@ -98,7 +98,7 @@ body {
     <div class="date-display" id="dateDisplay" style="cursor:pointer; position:relative;">
       <div class="main" id="dateLabel">-</div>
       <div class="sub" id="dateSubLabel"></div>
-      <input type="date" id="datePicker" style="position:absolute; inset:0; opacity:0; width:100%; height:100%; cursor:pointer;">
+      <input type="date" id="datePicker" style="position:absolute; left:0; bottom:0; width:1px; height:1px; opacity:0; pointer-events:none;">
     </div>
     <button id="nextDay">›</button>
   </div>
@@ -319,6 +319,17 @@ function updateDateUI() {
   datePicker.value = formatDateStr(currentDate);
   datePicker.max = formatDateStr(new Date());
 }
+
+const dateDisplay = document.getElementById("dateDisplay");
+dateDisplay.addEventListener("click", () => {
+  if (typeof datePicker.showPicker === "function") {
+    try { datePicker.showPicker(); return; } catch (e) {}
+  }
+  // 폴백: showPicker 미지원 브라우저
+  datePicker.style.pointerEvents = "auto";
+  datePicker.focus();
+  datePicker.click();
+});
 
 datePicker.addEventListener("change", () => {
   if (!datePicker.value) return;
