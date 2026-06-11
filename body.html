@@ -114,6 +114,10 @@ function subscribeRecords(onChange) {
     onChange();
   });
 }
+function parseLocalDate(str) {
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
 function formatDateStr(d) {
   const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), day = String(d.getDate()).padStart(2,"0");
   return `${y}-${m}-${day}`;
@@ -172,7 +176,7 @@ function render() {
   start.setHours(0,0,0,0);
 
   const dates = Object.keys(all)
-    .filter(d => { const dd = new Date(d); return dd >= start && dd <= end; })
+    .filter(d => { const dd = parseLocalDate(d); return dd >= start && dd <= end; })
     .filter(d => all[d].height != null || all[d].weight != null)
     .sort();
 
@@ -187,7 +191,7 @@ function render() {
   noDataEl.style.display = "none";
 
   const labels = dates.map(d => {
-    const dt = new Date(d);
+    const dt = parseLocalDate(d);
     return currentRange === "month" ? `${dt.getMonth()+1}/${dt.getDate()}` : `${dt.getFullYear()}.${dt.getMonth()+1}`;
   });
 
