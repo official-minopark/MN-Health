@@ -1,84 +1,436 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MN Health - 설정</title>
-<style>
-:root {
-  --bg: #f5f6f8; --card: #ffffff; --primary: #3182f6;
-  --text: #191f28; --text-sub: #8b95a1; --border: #f2f4f6; --red: #f04452;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg); color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-  min-height: 100vh; display: flex; flex-direction: column; padding-bottom: 76px;
-}
-.app-header { padding: 20px 20px 8px; font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-.container { flex: 1; width: 100%; max-width: 480px; margin: 0 auto; padding: 8px 20px; }
-.card { background: var(--card); border-radius: 16px; margin-bottom: 12px; overflow: hidden; }
-.menu-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px; font-size: 15px; font-weight: 600;
-  border-bottom: 1px solid var(--border); cursor: pointer;
-}
-.menu-item:last-child { border-bottom: none; }
-.menu-item .arrow { color: var(--text-sub); font-size: 14px; }
-.menu-item.danger { color: var(--red); }
-.section-label { font-size: 13px; color: var(--text-sub); font-weight: 700; margin: 4px 4px 8px; }
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0; display: flex;
-  background: var(--card); border-top: 1px solid var(--border);
-  max-width: 480px; margin: 0 auto; padding-bottom: env(safe-area-inset-bottom);
-}
-.bottom-nav a {
-  flex: 1; text-align: center; padding: 10px 4px; text-decoration: none;
-  color: var(--text-sub); font-size: 11px; font-weight: 600;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-}
-.bottom-nav a svg { display: block; }
-.bottom-nav a.active { color: var(--primary); }
-</style>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이페이지 — MN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #1d1d1f;
+      --gray: #6e6e73;
+      --gray-100: #f5f5f7;
+      --gray-200: #e8e8e4;
+      --light: #f5f5f7;
+      --white: #ffffff;
+      --blue: #0071e3;
+      --red: #ff3b30;
+      --green: #34c759;
+      --nav-height: 56px;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', -apple-system, sans-serif;
+      font-weight: 300;
+      background: var(--gray-100);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 0.5px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+    .nav-logo { height: 18px; width: auto; }
+    .nav-back {
+      font-size: 13px;
+      color: var(--gray);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--black); }
+
+    /* LAYOUT */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: calc(var(--nav-height) + 40px) 20px 80px;
+    }
+
+    /* PROFILE HEADER */
+    .profile-header {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 32px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      border: 0.5px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      padding: 14px;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .profile-info { flex: 1; min-width: 0; }
+    .profile-email {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--black);
+      letter-spacing: -0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .profile-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--green);
+      background: rgba(52,199,89,0.1);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .profile-badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    /* SECTION CARD */
+    .card {
+      background: var(--white);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .card-title {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--gray);
+      text-transform: uppercase;
+      padding: 20px 24px 12px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-top: 0.5px solid var(--gray-100);
+      cursor: pointer;
+      transition: background 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .menu-item:first-of-type { border-top: none; }
+    .menu-item:active, .menu-item:hover { background: var(--gray-100); }
+    .menu-item-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .menu-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+    .icon-gray { background: #e5e5ea; }
+    .icon-blue { background: rgba(0,113,227,0.12); }
+    .icon-red { background: rgba(255,59,48,0.1); }
+    .icon-orange { background: rgba(255,149,0,0.12); }
+    .menu-text { }
+    .menu-label {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--black);
+      letter-spacing: -0.01em;
+    }
+    .menu-label.danger { color: var(--red); }
+    .menu-sub {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 2px;
+      letter-spacing: -0.01em;
+    }
+    .menu-arrow {
+      font-size: 16px;
+      color: var(--gray-200);
+    }
+
+    /* MODAL OVERLAY */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 680px;
+      padding: 28px 24px 40px;
+      animation: slideUp 0.3s cubic-bezier(0.32,0.72,0,1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--gray-200);
+      margin: 0 auto 24px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .modal-desc {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    /* INPUT */
+    .input-wrap { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .input-label { font-size: 12px; color: var(--gray); letter-spacing: -0.01em; }
+    .input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--black);
+      background: var(--light);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input:focus {
+      border-color: rgba(0,113,227,0.5);
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.1);
+      background: var(--white);
+    }
+    .input.error {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(255,59,48,0.1);
+    }
+    .pw-rules { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
+    .rule { font-size: 11px; color: var(--gray); }
+    .rule.pass { color: var(--green); }
+    .error-msg { font-size: 12px; color: var(--red); min-height: 16px; letter-spacing: -0.01em; }
+    .success-msg { font-size: 12px; color: var(--green); min-height: 16px; letter-spacing: -0.01em; }
+
+    /* BUTTONS */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.01em;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--black); color: var(--white); }
+    .btn-danger { background: var(--red); color: var(--white); }
+    .btn-ghost {
+      background: none;
+      color: var(--gray);
+      border: 1px solid var(--gray-200);
+      margin-top: 8px;
+    }
+    .btn.loading { opacity: 0.5; pointer-events: none; }
+
+    /* GOOGLE BADGE */
+    .provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 6px;
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 480px) {
+      main { padding: calc(var(--nav-height) + 24px) 16px 90px; }
+      nav { padding: 0 16px; }
+      .profile-header { padding: 24px 20px; }
+      .menu-item { padding: 16px 20px; }
+      .card-title { padding: 18px 20px 10px; }
+    }
+
+    /* 하단 네비게이션 (MN Health 탭) */
+    body { padding-bottom: 70px; }
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; display: flex;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-top: 0.5px solid var(--gray-200);
+      max-width: 680px; margin: 0 auto; z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bottom-nav a {
+      flex: 1; text-align: center; padding: 9px 4px; text-decoration: none;
+      color: var(--gray); font-size: 10px; font-weight: 400;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      letter-spacing: -0.01em; -webkit-tap-highlight-color: transparent;
+    }
+    .bottom-nav a svg { display: block; }
+    .bottom-nav a.active { color: var(--blue); }
+  </style>
 </head>
 <body>
 
-<div class="app-header">설정</div>
+<nav>
+  <a href="index.html" class="nav-back">← MN</a>
+  <img src="data:image/png;base64,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" class="nav-logo" alt="MN">
+</nav>
 
-<div class="container">
-  <div class="section-label">계정</div>
-  <div class="card">
-    <div class="menu-item">
-      <span>이메일</span>
-      <span class="arrow" id="userEmail">-</span>
+<main>
+
+  <!-- 프로필 헤더 -->
+  <div class="profile-header">
+    <div class="avatar" id="avatar">
+      <img src="data:image/png;base64,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" alt="MN">
     </div>
-    <div class="menu-item danger" id="logoutBtn">
-      <span>로그아웃</span>
-      <span class="arrow">›</span>
+    <div class="profile-info">
+      <p class="profile-email" id="profile-email"></p>
+      <span class="provider-badge" id="provider-badge"></span>
+      <span class="profile-badge">활성 계정</span>
     </div>
   </div>
 
-  <div class="section-label">데이터</div>
+  <!-- 계정 관리 -->
   <div class="card">
-    <div class="menu-item" id="exportBtn">
-      <span>기록 내보내기 (JSON)</span>
-      <span class="arrow">›</span>
+    <p class="card-title">계정 관리</p>
+    <div class="menu-item" id="btn-change-pw" onclick="openModal('modal-changepw')">
+      <div class="menu-item-left">
+        <div class="menu-icon icon-blue">🔑</div>
+        <div class="menu-text">
+          <p class="menu-label">비밀번호 변경</p>
+          <p class="menu-sub">현재 비밀번호 확인 후 변경</p>
+        </div>
+      </div>
+      <span class="menu-arrow">›</span>
     </div>
-    <div class="menu-item danger" id="resetBtn">
-      <span>전체 기록 삭제</span>
-      <span class="arrow">›</span>
+    <div class="menu-item" onclick="openModal('modal-logout')">
+      <div class="menu-item-left">
+        <div class="menu-icon icon-gray">🚪</div>
+        <div class="menu-text">
+          <p class="menu-label">로그아웃</p>
+          <p class="menu-sub">이 기기에서 로그아웃</p>
+        </div>
+      </div>
+      <span class="menu-arrow">›</span>
     </div>
   </div>
 
-  <div class="section-label">정보</div>
+  <!-- 데이터 -->
   <div class="card">
-    <div class="menu-item">
-      <span>버전</span>
-      <span class="arrow">1.0.0</span>
+    <p class="card-title">데이터</p>
+    <div class="menu-item" id="btn-export">
+      <div class="menu-item-left">
+        <div class="menu-icon icon-blue">📥</div>
+        <div class="menu-text">
+          <p class="menu-label">기록 내보내기</p>
+          <p class="menu-sub">JSON 파일로 저장</p>
+        </div>
+      </div>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item" onclick="openModal('modal-reset')">
+      <div class="menu-item-left">
+        <div class="menu-icon icon-red">🗑️</div>
+        <div class="menu-text">
+          <p class="menu-label danger">전체 기록 삭제</p>
+          <p class="menu-sub">모든 건강 기록을 삭제합니다</p>
+        </div>
+      </div>
+      <span class="menu-arrow">›</span>
     </div>
   </div>
-</div>
 
+  <!-- 개인정보 -->
+  <div class="card">
+    <p class="card-title">개인정보</p>
+    <div class="menu-item" onclick="window.open('privacy.html','_blank')">
+      <div class="menu-item-left">
+        <div class="menu-icon icon-gray">📄</div>
+        <div class="menu-text">
+          <p class="menu-label">개인정보처리방침</p>
+          <p class="menu-sub">MN 개인정보 처리방침</p>
+        </div>
+      </div>
+      <span class="menu-arrow">›</span>
+    </div>
+    <div class="menu-item" onclick="openModal('modal-delete')">
+      <div class="menu-item-left">
+        <div class="menu-icon icon-red">⚠️</div>
+        <div class="menu-text">
+          <p class="menu-label danger">회원 탈퇴</p>
+          <p class="menu-sub">탈퇴 시 계정이 즉시 삭제됩니다</p>
+        </div>
+      </div>
+      <span class="menu-arrow">›</span>
+    </div>
+  </div>
+
+</main>
+
+<!-- 하단 네비게이션 -->
 <div class="bottom-nav">
   <a href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>기록</a>
   <a href="body.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>키/몸무게</a>
@@ -86,64 +438,282 @@ body {
   <a href="settings.html" class="active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>설정</a>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<!-- ── 전체 기록 삭제 모달 ── -->
+<div class="modal-overlay" id="modal-reset" onclick="closeModalOutside(event,'modal-reset')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <p class="modal-title">전체 기록 삭제</p>
+    <p class="modal-desc">모든 건강 기록(키·몸무게·운동)이 삭제되며 되돌릴 수 없어요.<br>계정은 유지됩니다.</p>
+    <p class="error-msg" id="reset-error"></p>
+    <p class="success-msg" id="reset-success"></p>
+    <button class="btn btn-danger" onclick="handleReset()">전체 삭제</button>
+    <button class="btn btn-ghost" onclick="closeModal('modal-reset')">취소</button>
+  </div>
+</div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDl_CNpDZk4UPHp8s-EhG83Gsr1WPLaF9g",
-  authDomain: "official-mn.firebaseapp.com",
-  projectId: "official-mn",
-  storageBucket: "official-mn.firebasestorage.app",
-  messagingSenderId: "892732440943",
-  appId: "1:892732440943:web:a4db28f12e17bd7c76e89a"
-};
+<!-- ── 비밀번호 변경 모달 ── -->
+<div class="modal-overlay" id="modal-changepw" onclick="closeModalOutside(event,'modal-changepw')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <p class="modal-title">비밀번호 변경</p>
+    <p class="modal-desc">현재 비밀번호를 확인한 후 새 비밀번호로 변경합니다.</p>
+    <div class="input-wrap">
+      <label class="input-label">현재 비밀번호</label>
+      <input class="input" id="cur-pw" type="password" placeholder="현재 비밀번호">
+    </div>
+    <div class="input-wrap">
+      <label class="input-label">새 비밀번호</label>
+      <input class="input" id="new-pw" type="password" placeholder="새 비밀번호 (8자 이상)" oninput="checkPwRules(this.value)">
+      <div class="pw-rules">
+        <span class="rule" id="r-len">✕ 8자 이상</span>
+        <span class="rule" id="r-upper">✕ 대/소문자 포함</span>
+        <span class="rule" id="r-num">✕ 숫자 포함</span>
+        <span class="rule" id="r-special">✕ 특수 기호 포함</span>
+      </div>
+    </div>
+    <div class="input-wrap">
+      <label class="input-label">새 비밀번호 확인</label>
+      <input class="input" id="new-pw2" type="password" placeholder="새 비밀번호 재입력">
+    </div>
+    <p class="error-msg" id="changepw-error"></p>
+    <p class="success-msg" id="changepw-success"></p>
+    <button class="btn btn-primary" onclick="handleChangePw()">변경하기</button>
+    <button class="btn btn-ghost" onclick="closeModal('modal-changepw')">취소</button>
+  </div>
+</div>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+<!-- ── 로그아웃 모달 ── -->
+<div class="modal-overlay" id="modal-logout" onclick="closeModalOutside(event,'modal-logout')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <p class="modal-title">로그아웃</p>
+    <p class="modal-desc">정말 로그아웃 하시겠어요?</p>
+    <button class="btn btn-primary" onclick="handleLogout()">로그아웃</button>
+    <button class="btn btn-ghost" onclick="closeModal('modal-logout')">취소</button>
+  </div>
+</div>
 
-let currentUser = null;
+<!-- ── 회원 탈퇴 모달 ── -->
+<div class="modal-overlay" id="modal-delete" onclick="closeModalOutside(event,'modal-delete')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <p class="modal-title">회원 탈퇴</p>
+    <p class="modal-desc">탈퇴하면 계정이 즉시 삭제되며 복구할 수 없어요.<br>본인 확인을 위해 비밀번호를 입력해주세요.</p>
+    <div class="input-wrap" id="delete-pw-wrap">
+      <label class="input-label">비밀번호</label>
+      <input class="input" id="delete-pw" type="password" placeholder="현재 비밀번호">
+    </div>
+    <p class="error-msg" id="delete-error"></p>
+    <button class="btn btn-danger" onclick="handleDelete()">탈퇴하기</button>
+    <button class="btn btn-ghost" onclick="closeModal('modal-delete')">취소</button>
+  </div>
+</div>
 
-onAuthStateChanged(auth, (user) => {
-  if (user && user.emailVerified) {
-    currentUser = user;
-    document.getElementById("userEmail").textContent = user.email || "-";
-  } else {
-    window.location.href = "login.html";
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyDl_CNpDZk4UPHp8s-EhG83Gsr1WPLaF9g",
+    authDomain: "official-mn.firebaseapp.com",
+    projectId: "official-mn",
+    storageBucket: "official-mn.firebasestorage.app",
+    messagingSenderId: "892732440943",
+    appId: "1:892732440943:web:a4db28f12e17bd7c76e89a"
+  });
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // 로그인 확인
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    document.getElementById('profile-email').textContent = user.email;
+
+    // 소셜 로그인 여부 확인
+    const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
+    if (isGoogle) {
+      document.getElementById('provider-badge').innerHTML = `
+        <svg width="12" height="12" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+          <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+          <path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/>
+          <path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.3z"/>
+        </svg>
+        Google 계정으로 로그인 중`;
+      // 구글 유저 — 비밀번호 변경 항목 숨김
+      document.getElementById('btn-change-pw').style.display = 'none';
+    }
+  });
+
+  // 모달 열기/닫기
+  function openModal(id) {
+    // 입력값 초기화
+    document.querySelectorAll('#' + id + ' input').forEach(el => el.value = '');
+    document.querySelectorAll('#' + id + ' .error-msg, #' + id + ' .success-msg').forEach(el => el.textContent = '');
+    document.getElementById(id).classList.add('open');
   }
-});
-
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  if (confirm("로그아웃 할까요?")) {
-    await signOut(auth);
-    window.location.href = "login.html";
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
   }
-});
-
-document.getElementById("exportBtn").addEventListener("click", async () => {
-  if (!currentUser) return;
-  const snap = await getDocs(collection(db, "users", currentUser.uid, "records"));
-  const data = {};
-  snap.forEach(d => { data[d.id] = d.data(); });
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "mnhealth_records.json";
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById("resetBtn").addEventListener("click", async () => {
-  if (!currentUser) return;
-  if (confirm("모든 기록을 삭제할까요? 이 작업은 되돌릴 수 없어요.")) {
-    const snap = await getDocs(collection(db, "users", currentUser.uid, "records"));
-    await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
-    alert("모든 기록이 삭제되었어요.");
+  function closeModalOutside(e, id) {
+    if (e.target === document.getElementById(id)) closeModal(id);
   }
-});
+
+  // 비밀번호 규칙 체크
+  function checkPwRules(pw) {
+    const set = (id, ok, text) => {
+      const el = document.getElementById(id);
+      el.textContent = (ok ? '✓' : '✕') + ' ' + text;
+      el.className = 'rule' + (ok ? ' pass' : '');
+    };
+    set('r-len',     pw.length >= 8,              '8자 이상');
+    set('r-upper',   /[a-z]/.test(pw) && /[A-Z]/.test(pw), '대/소문자 포함');
+    set('r-num',     /[0-9]/.test(pw),             '숫자 포함');
+    set('r-special', /[^a-zA-Z0-9]/.test(pw),     '특수 기호 포함');
+  }
+
+  function validatePw(pw) {
+    if (pw.length < 8)            return '비밀번호는 8자 이상이어야 해요.';
+    if (!/[a-z]/.test(pw))        return '소문자를 포함해야 해요.';
+    if (!/[A-Z]/.test(pw))        return '대문자를 포함해야 해요.';
+    if (!/[0-9]/.test(pw))        return '숫자를 포함해야 해요.';
+    if (!/[^a-zA-Z0-9]/.test(pw)) return '특수 기호를 포함해야 해요.';
+    return null;
+  }
+
+  // 비밀번호 변경
+  async function handleChangePw() {
+    const curPw  = document.getElementById('cur-pw').value;
+    const newPw  = document.getElementById('new-pw').value;
+    const newPw2 = document.getElementById('new-pw2').value;
+    const errEl  = document.getElementById('changepw-error');
+    const sucEl  = document.getElementById('changepw-success');
+    errEl.textContent = ''; sucEl.textContent = '';
+
+    if (!curPw || !newPw || !newPw2) { errEl.textContent = '모든 항목을 입력해주세요.'; return; }
+    if (newPw !== newPw2) { errEl.textContent = '새 비밀번호가 일치하지 않아요.'; return; }
+    const pwErr = validatePw(newPw);
+    if (pwErr) { errEl.textContent = pwErr; return; }
+    if (curPw === newPw) { errEl.textContent = '현재 비밀번호와 동일해요.'; return; }
+
+    const btn = event.target;
+    btn.classList.add('loading');
+    try {
+      const user = auth.currentUser;
+      const cred = firebase.auth.EmailAuthProvider.credential(user.email, curPw);
+      await user.reauthenticateWithCredential(cred);
+      await user.updatePassword(newPw);
+      sucEl.textContent = '비밀번호가 변경됐어요!';
+      setTimeout(() => closeModal('modal-changepw'), 1500);
+    } catch(e) {
+      if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential')
+        errEl.textContent = '현재 비밀번호가 올바르지 않아요.';
+      else if (e.code === 'auth/requires-recent-login')
+        errEl.textContent = '보안을 위해 다시 로그인 후 시도해주세요.';
+      else
+        errEl.textContent = '오류가 발생했어요. 다시 시도해주세요.';
+    } finally { btn.classList.remove('loading'); }
+  }
+
+  // 로그아웃
+  async function handleLogout() {
+    await auth.signOut();
+    window.location.href = 'index.html';
+  }
+
+  // 기록 내보내기
+  document.getElementById('btn-export').addEventListener('click', async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+      const snap = await db.collection('users').doc(user.uid).collection('records').get();
+      const data = {};
+      snap.forEach(d => { data[d.id] = d.data(); });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'mnhealth_records.json'; a.click();
+      URL.revokeObjectURL(url);
+    } catch(e) {
+      alert('내보내기 중 오류가 발생했어요.');
+    }
+  });
+
+  // 전체 기록 삭제
+  async function handleReset() {
+    const user = auth.currentUser;
+    if (!user) return;
+    const errEl = document.getElementById('reset-error');
+    const sucEl = document.getElementById('reset-success');
+    errEl.textContent = ''; sucEl.textContent = '';
+    const btn = event.target;
+    btn.classList.add('loading');
+    try {
+      const snap = await db.collection('users').doc(user.uid).collection('records').get();
+      const batch = db.batch();
+      snap.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+      sucEl.textContent = '모든 기록이 삭제됐어요.';
+      setTimeout(() => closeModal('modal-reset'), 1500);
+    } catch(e) {
+      errEl.textContent = '삭제 중 오류가 발생했어요. 다시 시도해주세요.';
+    } finally { btn.classList.remove('loading'); }
+  }
+
+  // 회원 탈퇴
+  async function handleDelete() {
+    const errEl = document.getElementById('delete-error');
+    errEl.textContent = '';
+    const user = auth.currentUser;
+    const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
+    const btn = event.target;
+    btn.classList.add('loading');
+
+    try {
+      if (isGoogle) {
+        // 구글 유저 — 팝업 재인증
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await user.reauthenticateWithPopup(provider);
+      } else {
+        // 이메일 유저 — 비밀번호 재인증
+        const pw = document.getElementById('delete-pw').value;
+        if (!pw) { errEl.textContent = '비밀번호를 입력해주세요.'; btn.classList.remove('loading'); return; }
+        const cred = firebase.auth.EmailAuthProvider.credential(user.email, pw);
+        await user.reauthenticateWithCredential(cred);
+      }
+      // 계정 삭제 전 건강 기록 정리
+      try {
+        const snap = await db.collection('users').doc(user.uid).collection('records').get();
+        const batch = db.batch();
+        snap.forEach(d => batch.delete(d.ref));
+        await batch.commit();
+      } catch(_) {}
+      await user.delete();
+      window.location.href = 'index.html';
+    } catch(e) {
+      if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential')
+        errEl.textContent = '비밀번호가 올바르지 않아요.';
+      else if (e.code === 'auth/requires-recent-login')
+        errEl.textContent = '보안을 위해 다시 로그인 후 시도해주세요.';
+      else if (e.code === 'auth/popup-closed-by-user')
+        errEl.textContent = '인증 창이 닫혔어요. 다시 시도해주세요.';
+      else
+        errEl.textContent = '오류가 발생했어요. 다시 시도해주세요.';
+    } finally { btn.classList.remove('loading'); }
+  }
+
+  // 구글 유저 탈퇴시 비밀번호 입력란 숨김
+  auth.onAuthStateChanged(user => {
+    if (!user) return;
+    const isGoogle = user.providerData.some(p => p.providerId === 'google.com');
+    const wrap = document.getElementById('delete-pw-wrap');
+    if (isGoogle && wrap) wrap.style.display = 'none';
+  });
 </script>
 </body>
 </html>
