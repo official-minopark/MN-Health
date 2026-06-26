@@ -1,397 +1,190 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MN Health</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      background: #f9fafb;
-      color: #191f28;
-      min-height: 100vh;
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;background:#f9fafb;color:#191f28;min-height:100vh}
 
     /* 로그인 화면 */
-    .login-screen {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 40px 32px;
-    }
-    .login-screen.visible { display: flex; }
-    .login-logo { font-size: 36px; font-weight: 800; color: #3182f6; letter-spacing: -1.5px; margin-bottom: 8px; }
-    .login-sub { font-size: 15px; color: #6b7684; margin-bottom: 48px; }
-    .btn-google {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #fff;
-      border: 1.5px solid #f2f4f6;
-      border-radius: 14px;
-      padding: 16px 28px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #191f28;
-      cursor: pointer;
-      font-family: inherit;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: box-shadow 0.15s;
-    }
-    .btn-google:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    #loginScreen{display:none;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;padding:40px 32px}
+    #loginScreen.on{display:flex}
+    .login-logo{font-size:36px;font-weight:800;color:#3182f6;letter-spacing:-1.5px;margin-bottom:8px}
+    .login-sub{font-size:15px;color:#6b7684;margin-bottom:48px}
+    .btn-google{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e5e8eb;border-radius:14px;padding:16px 28px;font-size:16px;font-weight:600;color:#191f28;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 
-    /* 앱 화면 */
-    .app-screen { display: none; }
-    .app-screen.visible { display: block; }
-
-    header {
-      background: #fff;
-      border-bottom: 1px solid #f2f4f6;
-      padding: 0 20px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .logo { font-size: 18px; font-weight: 700; color: #3182f6; letter-spacing: -0.5px; }
-    .header-avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: #e8f3ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: #3182f6;
-      cursor: pointer;
-      overflow: hidden;
-    }
-    .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-    main { max-width: 480px; margin: 0 auto; padding: 24px 20px 100px; }
-
-    .greeting { margin-bottom: 24px; }
-    .greeting h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-    .greeting p { font-size: 14px; color: #6b7684; margin-top: 4px; }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    .card-label { font-size: 12px; color: #6b7684; font-weight: 500; margin-bottom: 8px; }
-    .card-value { font-size: 28px; font-weight: 700; color: #191f28; letter-spacing: -1px; }
-    .card-unit { font-size: 14px; color: #6b7684; margin-left: 4px; }
-    .card-sub { font-size: 13px; color: #6b7684; margin-top: 6px; }
-    .card-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-    .badge-normal { background: #e8f3ff; color: #3182f6; }
-    .badge-warning { background: #fff3e0; color: #ff9800; }
-    .badge-danger { background: #ffeaea; color: #f44336; }
-
-    .bmi-bar-wrap {
-      background: #f2f4f6;
-      border-radius: 100px;
-      height: 8px;
-      margin-top: 14px;
-      position: relative;
-    }
-    .bmi-marker {
-      position: absolute;
-      top: -4px;
-      width: 16px; height: 16px;
-      background: #3182f6;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 2px 4px rgba(49,130,246,0.4);
-      transition: left 0.6s ease;
-    }
-
-    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    .summary-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    .summary-card .card-value { font-size: 22px; }
-
-    .exercise-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #f2f4f6;
-    }
-    .exercise-row:last-child { border-bottom: none; }
-    .exercise-name { font-size: 14px; color: #191f28; font-weight: 500; }
-    .exercise-kcal { font-size: 14px; color: #3182f6; font-weight: 600; }
-
-    .quick-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
-    .quick-btn {
-      background: #fff;
-      border: none;
-      border-radius: 16px;
-      padding: 18px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      text-decoration: none;
-      transition: transform 0.15s;
-    }
-    .quick-btn:active { transform: scale(0.97); }
-    .quick-btn svg { color: #3182f6; }
-    .quick-btn span { font-size: 14px; font-weight: 600; color: #191f28; }
-    .quick-btn small { font-size: 12px; color: #6b7684; }
-
-    nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: #fff;
-      border-top: 1px solid #f2f4f6;
-      display: flex;
-      height: 64px;
-      z-index: 100;
-    }
-    nav a {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-decoration: none;
-      color: #b0b8c1;
-      font-size: 10px;
-      font-weight: 500;
-    }
-    nav a.active { color: #3182f6; }
+    /* 앱 */
+    #appScreen{display:none}
+    #appScreen.on{display:block}
+    header{background:#fff;border-bottom:1px solid #f2f4f6;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .logo{font-size:18px;font-weight:700;color:#3182f6;letter-spacing:-0.5px}
+    .avatar{width:32px;height:32px;border-radius:50%;background:#e8f3ff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#3182f6;cursor:pointer;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    main{max-width:480px;margin:0 auto;padding:24px 20px 100px}
+    .greeting{margin-bottom:24px}
+    .greeting h1{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+    .greeting p{font-size:14px;color:#6b7684;margin-top:4px}
+    .card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);cursor:pointer}
+    .card-label{font-size:12px;color:#6b7684;font-weight:500;margin-bottom:8px}
+    .card-value{font-size:28px;font-weight:700;letter-spacing:-1px}
+    .card-unit{font-size:14px;color:#6b7684;margin-left:4px}
+    .card-sub{font-size:13px;color:#6b7684;margin-top:6px}
+    .badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:12px;font-weight:600;margin-top:8px}
+    .b-normal{background:#e8f3ff;color:#3182f6}
+    .b-warning{background:#fff3e0;color:#ff9800}
+    .b-danger{background:#ffeaea;color:#f44336}
+    .b-none{background:#f2f4f6;color:#b0b8c1}
+    .bmi-bar{background:#f2f4f6;border-radius:100px;height:8px;margin-top:14px;position:relative}
+    .bmi-dot{position:absolute;top:-4px;width:16px;height:16px;background:#3182f6;border:2px solid #fff;border-radius:50%;transform:translateX(-50%);box-shadow:0 2px 4px rgba(49,130,246,0.4);transition:left 0.6s}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .grid2 .card{cursor:default}
+    .grid2 .card-value{font-size:22px}
+    .ex-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f2f4f6}
+    .ex-row:last-child{border-bottom:none}
+    .ex-name{font-size:14px;font-weight:500}
+    .ex-kcal{font-size:14px;color:#3182f6;font-weight:600}
+    .quick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+    .quick a{background:#fff;border:none;border-radius:16px;padding:18px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06);text-decoration:none}
+    .quick a svg{color:#3182f6}
+    .quick a span{font-size:14px;font-weight:600;color:#191f28}
+    .quick a small{font-size:12px;color:#6b7684}
+    nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #f2f4f6;display:flex;height:64px;z-index:100}
+    nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-decoration:none;color:#b0b8c1;font-size:10px;font-weight:500}
+    nav a.active{color:#3182f6}
   </style>
 </head>
 <body>
 
-<!-- 로그인 화면 -->
-<div class="login-screen" id="loginScreen">
+<div id="loginScreen">
   <div class="login-logo">MN Health</div>
   <div class="login-sub">건강한 하루를 기록하세요</div>
   <button class="btn-google" id="btnGoogle">
-    <svg width="20" height="20" viewBox="0 0 24 24">
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-    </svg>
+    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
     Google로 시작하기
   </button>
 </div>
 
-<!-- 앱 화면 -->
-<div class="app-screen" id="appScreen">
+<div id="appScreen">
   <header>
     <div class="logo">MN Health</div>
-    <div class="header-avatar" id="headerAvatar" onclick="location.href='settings.html'">
-      <span id="avatarInitial">?</span>
-    </div>
+    <div class="avatar" id="avatar" onclick="location.href='settings.html'"><span id="avatarTxt">?</span></div>
   </header>
-
   <main>
     <div class="greeting">
-      <h1 id="greetingText">안녕하세요</h1>
-      <p id="greetingDate"></p>
+      <h1 id="greetHi">안녕하세요</h1>
+      <p id="greetDate"></p>
     </div>
 
-    <div class="card" onclick="location.href='body.html'" style="cursor:pointer">
+    <div class="card" onclick="location.href='body.html'">
       <div class="card-label">내 BMI</div>
-      <div>
-        <span class="card-value" id="bmiValue">--</span>
-        <span class="card-unit">kg/m²</span>
+      <div><span class="card-value" id="bmiVal">--</span><span class="card-unit">kg/m²</span></div>
+      <div class="bmi-bar"><div class="bmi-dot" id="bmiDot" style="left:50%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px">
+        <span style="font-size:11px;color:#b0b8c1">저체중</span><span style="font-size:11px;color:#b0b8c1">정상</span><span style="font-size:11px;color:#b0b8c1">과체중</span><span style="font-size:11px;color:#b0b8c1">비만</span>
       </div>
-      <div class="bmi-bar-wrap">
-        <div class="bmi-marker" id="bmiMarker" style="left:50%"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-top:8px;">
-        <span style="font-size:11px;color:#b0b8c1;">저체중</span>
-        <span style="font-size:11px;color:#b0b8c1;">정상</span>
-        <span style="font-size:11px;color:#b0b8c1;">과체중</span>
-        <span style="font-size:11px;color:#b0b8c1;">비만</span>
-      </div>
-      <span class="card-badge" id="bmiBadge" style="background:#f2f4f6;color:#b0b8c1;">정보 없음</span>
+      <span class="badge b-none" id="bmiBadge">정보 없음</span>
     </div>
 
-    <div class="summary-grid">
-      <div class="summary-card">
+    <div class="grid2">
+      <div class="card">
         <div class="card-label">오늘 소모 칼로리</div>
-        <div>
-          <span class="card-value" id="todayKcal">0</span>
-          <span class="card-unit">kcal</span>
-        </div>
+        <div><span class="card-value" id="todayKcal">0</span><span class="card-unit">kcal</span></div>
         <div class="card-sub" id="kcalSub">운동 기록 없음</div>
       </div>
-      <div class="summary-card">
+      <div class="card">
         <div class="card-label">이번 주 운동</div>
-        <div>
-          <span class="card-value" id="weekCount">0</span>
-          <span class="card-unit">회</span>
-        </div>
+        <div><span class="card-value" id="weekCnt">0</span><span class="card-unit">회</span></div>
         <div class="card-sub">목표: 3회</div>
       </div>
     </div>
 
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <div class="card" style="cursor:default">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div class="card-label" style="margin:0">오늘 운동</div>
-        <a href="exercise.html" style="font-size:13px;color:#3182f6;text-decoration:none;font-weight:600;">+ 추가</a>
+        <a href="exercise.html" style="font-size:13px;color:#3182f6;text-decoration:none;font-weight:600">+ 추가</a>
       </div>
-      <div id="todayExerciseList">
-        <div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px;">오늘 운동 기록이 없어요</div>
-      </div>
+      <div id="todayList"><div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px">오늘 운동 기록이 없어요</div></div>
     </div>
 
-    <div class="quick-btns">
-      <a href="body.html" class="quick-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-        <span>신체 기록</span>
-        <small>체중 · BMI 관리</small>
-      </a>
-      <a href="exercise.html" class="quick-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-        </svg>
-        <span>운동 기록</span>
-        <small>칼로리 계산</small>
-      </a>
+    <div class="quick">
+      <a href="body.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>신체 기록</span><small>체중 · BMI 관리</small></a>
+      <a href="exercise.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>운동 기록</span><small>칼로리 계산</small></a>
     </div>
   </main>
-
   <nav>
-    <a href="index.html" class="active">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-      홈
-    </a>
-    <a href="body.html">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-      신체
-    </a>
-    <a href="exercise.html">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-      운동
-    </a>
-    <a href="settings.html">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="8" r="4"/>
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-      </svg>
-      설정
-    </a>
+    <a href="index.html" class="active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈</a>
+    <a href="body.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>신체</a>
+    <a href="exercise.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>운동</a>
+    <a href="settings.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>설정</a>
   </nav>
 </div>
 
 <script type="module">
-  import { auth, db, googleProvider, signInWithPopup, onAuthStateChanged, userCol, orderBy, getDocs, query } from './firebase.js';
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const loginScreen = document.getElementById('loginScreen');
-  const appScreen = document.getElementById('appScreen');
+  const app = initializeApp({
+    apiKey:"AIzaSyBDIgsg99fxj2RFeEeFVD92mNltAweDpd8",
+    authDomain:"mn-health.firebaseapp.com",
+    projectId:"mn-health",
+    storageBucket:"mn-health.firebasestorage.app",
+    messagingSenderId:"442489563296",
+    appId:"1:442489563296:web:c2a044ee36b1a1c59641c5"
+  });
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  document.getElementById('btnGoogle').onclick = async () => {
-    try { await signInWithPopup(auth, googleProvider); }
-    catch(e) { alert('로그인에 실패했어요. 다시 시도해 주세요.'); }
-  };
+  document.getElementById('btnGoogle').onclick = () =>
+    signInWithPopup(auth, new GoogleAuthProvider()).catch(() => alert('로그인 실패. 다시 시도해 주세요.'));
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      loginScreen.classList.add('visible');
-      appScreen.classList.remove('visible');
-      return;
-    }
-    loginScreen.classList.remove('visible');
-    appScreen.classList.add('visible');
+  function bmiInfo(b){ return b<18.5?{l:'저체중',c:'b-warning'}:b<23?{l:'정상',c:'b-normal'}:b<25?{l:'과체중',c:'b-warning'}:{l:'비만',c:'b-danger'}; }
+
+  onAuthStateChanged(auth, async user => {
+    if(!user){ document.getElementById('loginScreen').classList.add('on'); return; }
+    document.getElementById('loginScreen').classList.remove('on');
+    document.getElementById('appScreen').classList.add('on');
 
     // 아바타
-    const initial = document.getElementById('avatarInitial');
-    const avatar = document.getElementById('headerAvatar');
-    if (user.photoURL) {
-      avatar.innerHTML = `<img src="${user.photoURL}" />`;
-    } else {
-      initial.textContent = (user.displayName || user.email || '?')[0].toUpperCase();
-    }
+    if(user.photoURL) document.getElementById('avatar').innerHTML=`<img src="${user.photoURL}">`;
+    else document.getElementById('avatarTxt').textContent=(user.displayName||user.email||'?')[0].toUpperCase();
 
-    // 인사말
-    const now = new Date();
-    const h = now.getHours();
-    const name = user.displayName ? user.displayName.split(' ')[0] : '';
-    const greet = h < 6 ? '좋은 새벽이에요' : h < 12 ? '좋은 아침이에요' : h < 18 ? '안녕하세요' : '좋은 저녁이에요';
-    document.getElementById('greetingText').textContent = name ? `${name}님, ${greet}` : greet;
-    const days = ['일','월','화','수','목','금','토'];
-    document.getElementById('greetingDate').textContent = `${now.getMonth()+1}월 ${now.getDate()}일 ${days[now.getDay()]}요일`;
+    // 인사
+    const now=new Date(), h=now.getHours(), name=(user.displayName||'').split(' ')[0];
+    const greet=h<6?'좋은 새벽이에요':h<12?'좋은 아침이에요':h<18?'안녕하세요':'좋은 저녁이에요';
+    document.getElementById('greetHi').textContent=name?`${name}님, ${greet}`:greet;
+    document.getElementById('greetDate').textContent=`${now.getMonth()+1}월 ${now.getDate()}일 ${'일월화수목금토'[now.getDay()]}요일`;
 
-    // 신체 기록 (최신 BMI)
-    try {
-      const snap = await getDocs(query(userCol(user.uid, 'body_records'), orderBy('date')));
-      if (!snap.empty) {
-        const latest = snap.docs[snap.docs.length - 1].data();
-        const bmi = latest.bmi;
-        document.getElementById('bmiValue').textContent = bmi.toFixed(1);
-        let label, cls;
-        if (bmi < 18.5) { label='저체중'; cls='badge-warning'; }
-        else if (bmi < 23) { label='정상'; cls='badge-normal'; }
-        else if (bmi < 25) { label='과체중'; cls='badge-warning'; }
-        else { label='비만'; cls='badge-danger'; }
-        const badge = document.getElementById('bmiBadge');
-        badge.textContent = label; badge.className = 'card-badge ' + cls;
-        const pct = Math.min(Math.max((bmi - 15) / 20 * 100, 2), 98);
-        document.getElementById('bmiMarker').style.left = pct + '%';
+    // BMI
+    try{
+      const snap=await getDocs(query(collection(db,`users/${user.uid}/body_records`),orderBy('date')));
+      if(!snap.empty){
+        const b=snap.docs[snap.docs.length-1].data().bmi;
+        document.getElementById('bmiVal').textContent=b.toFixed(1);
+        const {l,c}=bmiInfo(b);
+        const badge=document.getElementById('bmiBadge');
+        badge.textContent=l; badge.className='badge '+c;
+        document.getElementById('bmiDot').style.left=Math.min(Math.max((b-15)/20*100,2),98)+'%';
       }
-    } catch(e) {}
+    }catch(e){}
 
-    // 운동 기록
-    try {
-      const today = new Date().toISOString().slice(0,10);
-      const snap = await getDocs(query(userCol(user.uid, 'exercise_records'), orderBy('date')));
-      const records = snap.docs.map(d => d.data());
-      const todayRecs = records.filter(r => r.date === today);
-
-      if (todayRecs.length > 0) {
-        const total = todayRecs.reduce((s,r) => s + r.kcal, 0);
-        document.getElementById('todayKcal').textContent = Math.round(total);
-        document.getElementById('kcalSub').textContent = `${todayRecs.length}가지 운동`;
-        document.getElementById('todayExerciseList').innerHTML = todayRecs.map(r =>
-          `<div class="exercise-row"><span class="exercise-name">${r.name}</span><span class="exercise-kcal">${r.kcal} kcal</span></div>`
-        ).join('');
+    // 운동
+    try{
+      const today=new Date().toISOString().slice(0,10);
+      const snap=await getDocs(query(collection(db,`users/${user.uid}/exercise_records`),orderBy('date')));
+      const recs=snap.docs.map(d=>d.data());
+      const todayRecs=recs.filter(r=>r.date===today);
+      if(todayRecs.length){
+        const total=todayRecs.reduce((s,r)=>s+r.kcal,0);
+        document.getElementById('todayKcal').textContent=Math.round(total);
+        document.getElementById('kcalSub').textContent=`${todayRecs.length}가지 운동`;
+        document.getElementById('todayList').innerHTML=todayRecs.map(r=>`<div class="ex-row"><span class="ex-name">${r.name}</span><span class="ex-kcal">${r.kcal} kcal</span></div>`).join('');
       }
-
-      const weekStart = new Date();
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      const weekDays = new Set(records.filter(r => new Date(r.date) >= weekStart).map(r => r.date));
-      document.getElementById('weekCount').textContent = weekDays.size;
-    } catch(e) {}
+      const ws=new Date(); ws.setDate(ws.getDate()-ws.getDay());
+      document.getElementById('weekCnt').textContent=new Set(recs.filter(r=>new Date(r.date)>=ws).map(r=>r.date)).size;
+    }catch(e){}
   });
 </script>
 </body>

@@ -1,170 +1,45 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>개인정보 처리방침 - MN Health</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      background: #f9fafb;
-      color: #191f28;
-      min-height: 100vh;
-    }
-    header {
-      background: #fff;
-      border-bottom: 1px solid #f2f4f6;
-      padding: 0 20px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    header a { color: #191f28; text-decoration: none; display: flex; align-items: center; }
-    header h2 { font-size: 17px; font-weight: 700; }
-    main {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 32px 20px 60px;
-    }
-
-    .updated {
-      font-size: 13px;
-      color: #b0b8c1;
-      margin-bottom: 28px;
-    }
-
-    .section {
-      margin-bottom: 28px;
-    }
-    .section h3 {
-      font-size: 16px;
-      font-weight: 700;
-      color: #191f28;
-      margin-bottom: 10px;
-    }
-    .section p {
-      font-size: 14px;
-      color: #4e5968;
-      line-height: 1.7;
-      margin-bottom: 8px;
-    }
-    .section ul {
-      padding-left: 16px;
-    }
-    .section ul li {
-      font-size: 14px;
-      color: #4e5968;
-      line-height: 1.7;
-      margin-bottom: 4px;
-    }
-
-    .highlight-box {
-      background: #e8f3ff;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 28px;
-    }
-    .highlight-box p {
-      font-size: 14px;
-      color: #3182f6;
-      line-height: 1.6;
-      font-weight: 500;
-    }
-
-    .divider { height: 1px; background: #f2f4f6; margin: 24px 0; }
-
-    .contact-card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    .contact-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
-    .contact-card p { font-size: 14px; color: #4e5968; line-height: 1.7; }
-    .contact-card a { color: #3182f6; text-decoration: none; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;background:#f9fafb;color:#191f28;min-height:100vh}
+    header{background:#fff;border-bottom:1px solid #f2f4f6;padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+    header a{color:#191f28;text-decoration:none;display:flex;align-items:center}
+    header h2{font-size:17px;font-weight:700}
+    main{max-width:480px;margin:0 auto;padding:32px 20px 60px}
+    .updated{font-size:13px;color:#b0b8c1;margin-bottom:28px}
+    .highlight{background:#e8f3ff;border-radius:12px;padding:16px;margin-bottom:28px}
+    .highlight p{font-size:14px;color:#3182f6;line-height:1.6;font-weight:500}
+    .section{margin-bottom:28px}
+    .section h3{font-size:16px;font-weight:700;margin-bottom:10px}
+    .section p{font-size:14px;color:#4e5968;line-height:1.7;margin-bottom:8px}
+    .section ul{padding-left:16px}
+    .section ul li{font-size:14px;color:#4e5968;line-height:1.7;margin-bottom:4px}
+    .divider{height:1px;background:#f2f4f6;margin:24px 0}
+    .contact{background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    .contact h3{font-size:15px;font-weight:700;margin-bottom:10px}
+    .contact p{font-size:14px;color:#4e5968;line-height:1.7}
+    .contact a{color:#3182f6;text-decoration:none}
   </style>
 </head>
 <body>
-
 <header>
-  <a href="settings.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  </a>
+  <a href="settings.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a>
   <h2>개인정보 처리방침</h2>
 </header>
-
 <main>
   <div class="updated">최종 업데이트: 2025년 6월</div>
-
-  <div class="highlight-box">
-    <p>MN Health는 사용자의 건강 데이터를 소중히 여깁니다. 모든 데이터는 기기 내에 저장되며, 서버로 전송되지 않습니다.</p>
-  </div>
-
-  <div class="section">
-    <h3>1. 수집하는 정보</h3>
-    <p>MN Health는 다음 정보를 수집합니다:</p>
-    <ul>
-      <li>이름 (선택)</li>
-      <li>생년월일 (선택)</li>
-      <li>성별 (선택)</li>
-      <li>키, 체중 등 신체 정보</li>
-      <li>운동 기록 (종류, 시간, 소모 칼로리)</li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h3>2. 정보의 저장 방식</h3>
-    <p>수집된 모든 정보는 사용자의 기기(브라우저 localStorage)에만 저장됩니다. MN Health는 별도의 서버에 개인 건강 데이터를 전송하거나 저장하지 않습니다.</p>
-  </div>
-
-  <div class="section">
-    <h3>3. 정보의 이용 목적</h3>
-    <p>수집된 정보는 다음 목적으로만 사용됩니다:</p>
-    <ul>
-      <li>BMI 계산 및 건강 지표 표시</li>
-      <li>운동 칼로리 계산 (MET 기반)</li>
-      <li>건강 데이터 시각화 및 통계 제공</li>
-      <li>앱 내 개인화된 경험 제공</li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h3>4. 제3자 제공</h3>
-    <p>MN Health는 사용자의 개인 건강 정보를 제3자에게 제공하지 않습니다. Google 로그인 사용 시 Google의 개인정보 처리방침이 적용될 수 있습니다.</p>
-  </div>
-
-  <div class="section">
-    <h3>5. 데이터 삭제</h3>
-    <p>설정 화면에서 언제든지 모든 데이터를 삭제할 수 있습니다. 브라우저의 사이트 데이터 초기화를 통해서도 삭제 가능합니다.</p>
-  </div>
-
-  <div class="section">
-    <h3>6. BMI 계산 기준</h3>
-    <p>본 앱의 BMI 계산은 대한비만학회 아시아-태평양 기준을 따릅니다:</p>
-    <ul>
-      <li>저체중: BMI 18.5 미만</li>
-      <li>정상: BMI 18.5 ~ 22.9</li>
-      <li>과체중: BMI 23.0 ~ 24.9</li>
-      <li>비만: BMI 25.0 이상</li>
-    </ul>
-    <p>이는 의학적 진단을 대체하지 않으며, 참고 목적으로만 사용하시기 바랍니다.</p>
-  </div>
-
+  <div class="highlight"><p>MN Health는 사용자의 건강 데이터를 소중히 여깁니다. 모든 데이터는 Firebase에 안전하게 저장되며, 본인의 계정으로만 접근 가능합니다.</p></div>
+  <div class="section"><h3>1. 수집하는 정보</h3><ul><li>Google 계정 정보 (이름, 이메일, 프로필 사진)</li><li>키, 체중 등 신체 정보</li><li>운동 기록 (종류, 시간, 소모 칼로리)</li></ul></div>
+  <div class="section"><h3>2. 정보의 저장</h3><p>수집된 데이터는 Firebase Firestore에 저장되며, 구글 계정(UID) 기반으로 분리 관리됩니다. 다른 사용자는 접근할 수 없습니다.</p></div>
+  <div class="section"><h3>3. 이용 목적</h3><ul><li>BMI 계산 및 건강 지표 표시</li><li>운동 칼로리 계산 (MET 기반)</li><li>건강 데이터 시각화</li></ul></div>
+  <div class="section"><h3>4. BMI 계산 기준</h3><p>대한비만학회 아시아-태평양 기준을 따릅니다. 의학적 진단을 대체하지 않으며 참고 목적으로만 사용하세요.</p><ul><li>저체중: BMI 18.5 미만</li><li>정상: BMI 18.5~22.9</li><li>과체중: BMI 23.0~24.9</li><li>비만: BMI 25.0 이상</li></ul></div>
   <div class="divider"></div>
-
-  <div class="contact-card">
-    <h3>문의</h3>
-    <p>개인정보 처리에 관한 문의는 아래로 연락 주세요.<br>
-    <a href="mailto:official.minopark@gmail.com">official.minopark@gmail.com</a></p>
-  </div>
+  <div class="contact"><h3>문의</h3><p><a href="mailto:official.minopark@gmail.com">official.minopark@gmail.com</a></p></div>
 </main>
-
 </body>
 </html>
