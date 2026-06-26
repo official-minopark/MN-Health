@@ -26,6 +26,7 @@
     .bmi-dot{position:absolute;top:-4px;width:18px;height:18px;background:#fff;border:3px solid #3182f6;border-radius:50%;transform:translateX(-50%);box-shadow:0 2px 6px rgba(49,130,246,0.4);transition:left 0.6s}
     .bmi-labs{display:flex;justify-content:space-between;margin-top:6px}
     .bmi-labs span{font-size:11px;color:#b0b8c1;text-align:center}
+    .info-box{background:#f2f4f6;border-radius:12px;padding:12px 14px;margin-top:12px;font-size:13px;color:#6b7684;line-height:1.5}
     label{font-size:13px;color:#6b7684;font-weight:500;display:block;margin-bottom:6px}
     input[type=date],input[type=number]{width:100%;padding:14px 16px;border:1.5px solid #f2f4f6;border-radius:12px;font-size:16px;color:#191f28;background:#f9fafb;outline:none;font-family:inherit;margin-bottom:14px}
     input:focus{border-color:#3182f6;background:#fff}
@@ -59,6 +60,7 @@
     </div>
     <div class="bmi-labs"><span>저체중<br>&lt;18.5</span><span>정상<br>18.5~23</span><span>과체중<br>23~25</span><span>비만<br>≥25</span></div>
     <span class="badge b-none" id="bmiBadge">정보 없음</span>
+    <div class="info-box" id="bmiInfo" style="display:none"></div>
   </div>
 
   <div class="card">
@@ -92,7 +94,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const app = initializeApp({
     apiKey:"AIzaSyBDIgsg99fxj2RFeEeFVD92mNltAweDpd8",
@@ -104,19 +106,74 @@
   });
   const auth = getAuth(app);
   const db = getFirestore(app);
-  let uid, recs=[];
+  let uid, recs=[], profile={};
 
-  // 날짜 초기화 (미래 막기)
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('iDate').value = today;
   document.getElementById('iDate').max = today;
 
-  function col() { return collection(db, `users/${uid}/body_records`); }
-  function bmiInfo(b){ return b<18.5?{l:'저체중',c:'b-warning'}:b<23?{l:'정상',c:'b-normal'}:b<25?{l:'과체중',c:'b-warning'}:{l:'비만',c:'b-danger'}; }
+  // ── 연령 계산 ──
+  function getAge(birthStr) {
+    if(!birthStr) return null;
+    const birth = new Date(birthStr), now = new Date();
+    let age = now.getFullYear() - birth.getFullYear();
+    if(now.getMonth() < birth.getMonth() || (now.getMonth()===birth.getMonth() && now.getDate()<birth.getDate())) age--;
+    return age;
+  }
+
+  // ── BMI 판정 (연령/성별 반영) ──
+  // 소아청소년(2~18세): 질병관리청 2017 소아청소년 성장도표 BMI 백분위수 기준
+  // 성인(18세 이상): 대한비만학회 아시아태평양 기준
+  function bmiInfo(bmi, age, gender) {
+    if(age !== null && age < 18 && age >= 2) {
+      // 소아청소년 기준: BMI 백분위수 (5th/85th/95th 근사값)
+      // 성별/연령별 정확한 백분위 테이블 대신 대표 근사값 사용
+      const cutoffs = getChildCutoffs(age, gender);
+      if(bmi < cutoffs.p5)  return {l:'저체중 (5th 미만)',   c:'b-warning', info:`${age}세 ${gender==='male'?'남자':'여자'} 기준 하위 5% 미만입니다.`};
+      if(bmi < cutoffs.p85) return {l:'정상',                c:'b-normal',  info:`${age}세 ${gender==='male'?'남자':'여자'} 기준 정상 범위(5th~85th)입니다.`};
+      if(bmi < cutoffs.p95) return {l:'과체중 (85th~95th)', c:'b-warning', info:`${age}세 ${gender==='male'?'남자':'여자'} 기준 과체중 범위입니다.`};
+      return              {l:'비만 (95th 이상)',   c:'b-danger',  info:`${age}세 ${gender==='male'?'남자':'여자'} 기준 비만 범위입니다.`};
+    }
+    // 성인 기준
+    if(bmi < 18.5) return {l:'저체중', c:'b-warning', info:'대한비만학회 아시아태평양 기준: BMI 18.5 미만'};
+    if(bmi < 23)   return {l:'정상',   c:'b-normal',  info:'대한비만학회 아시아태평양 기준: BMI 18.5~22.9'};
+    if(bmi < 25)   return {l:'과체중', c:'b-warning', info:'대한비만학회 아시아태평양 기준: BMI 23.0~24.9'};
+    return               {l:'비만',   c:'b-danger',  info:'대한비만학회 아시아태평양 기준: BMI 25.0 이상'};
+  }
+
+  // 질병관리청 2017 소아청소년 성장도표 BMI 백분위 근사값 (5th / 85th / 95th)
+  function getChildCutoffs(age, gender) {
+    const male = {
+      2:{p5:14.3,p85:17.0,p95:18.0}, 3:{p5:13.9,p85:16.6,p95:17.6}, 4:{p5:13.6,p85:16.3,p95:17.3},
+      5:{p5:13.4,p85:16.2,p95:17.4}, 6:{p5:13.3,p85:16.3,p95:17.8}, 7:{p5:13.4,p85:16.8,p95:18.5},
+      8:{p5:13.6,p85:17.5,p95:19.5}, 9:{p5:13.9,p85:18.2,p95:20.5},10:{p5:14.2,p85:19.0,p95:21.5},
+      11:{p5:14.6,p85:19.8,p95:22.5},12:{p5:15.0,p85:20.6,p95:23.3},13:{p5:15.5,p85:21.3,p95:24.0},
+      14:{p5:16.0,p85:22.0,p95:24.7},15:{p5:16.5,p85:22.6,p95:25.2},16:{p5:17.0,p85:23.1,p95:25.6},
+      17:{p5:17.4,p85:23.5,p95:25.9}
+    };
+    const female = {
+      2:{p5:14.0,p85:17.0,p95:18.1}, 3:{p5:13.6,p85:16.6,p95:17.7}, 4:{p5:13.3,p85:16.3,p95:17.5},
+      5:{p5:13.1,p85:16.2,p95:17.7}, 6:{p5:13.0,p85:16.4,p95:18.2}, 7:{p5:13.1,p85:17.0,p95:19.0},
+      8:{p5:13.3,p85:17.7,p95:20.0}, 9:{p5:13.6,p85:18.5,p95:21.1},10:{p5:14.0,p85:19.3,p95:22.1},
+      11:{p5:14.5,p85:20.2,p95:23.1},12:{p5:15.1,p85:21.1,p95:24.0},13:{p5:15.7,p85:21.9,p95:24.7},
+      14:{p5:16.2,p85:22.5,p95:25.2},15:{p5:16.6,p85:23.0,p95:25.6},16:{p5:17.0,p85:23.3,p95:25.9},
+      17:{p5:17.3,p85:23.6,p95:26.1}
+    };
+    const tbl = gender==='female' ? female : male;
+    const a = Math.min(Math.max(Math.floor(age), 2), 17);
+    return tbl[a] || {p5:14.0, p85:18.5, p95:23.0};
+  }
+
+  function col(){ return collection(db, `users/${uid}/body_records`); }
 
   onAuthStateChanged(auth, async user => {
     if(!user){ location.href='index.html'; return; }
     uid = user.uid;
+    // 프로필(생년월일/성별) 로드
+    try {
+      const snap = await getDoc(doc(db, `users/${uid}/profile`, 'info'));
+      if(snap.exists()) profile = snap.data();
+    } catch(e){}
     await load();
   });
 
@@ -129,57 +186,70 @@
 
   function renderBMI(){
     if(!recs.length) return;
-    const b=recs[recs.length-1].bmi;
-    document.getElementById('bmiVal').textContent=b.toFixed(1);
-    const {l,c}=bmiInfo(b);
-    const badge=document.getElementById('bmiBadge'); badge.textContent=l; badge.className='badge '+c;
-    document.getElementById('bmiDot').style.left=Math.min(Math.max((b-15)/20*100,2),98)+'%';
+    const b = recs[recs.length-1].bmi;
+    const age = getAge(profile.birth);
+    const gender = profile.gender || 'male';
+    document.getElementById('bmiVal').textContent = b.toFixed(1);
+    const {l, c, info} = bmiInfo(b, age, gender);
+    const badge = document.getElementById('bmiBadge');
+    badge.textContent = l; badge.className = 'badge ' + c;
+    document.getElementById('bmiDot').style.left = Math.min(Math.max((b-15)/20*100, 2), 98) + '%';
+    const infoBox = document.getElementById('bmiInfo');
+    if(info){ infoBox.style.display='block'; infoBox.textContent = info; }
+
+    // 프로필 미설정 안내
+    if(age === null){
+      infoBox.style.display='block';
+      infoBox.textContent='설정에서 생년월일과 성별을 입력하면 연령에 맞는 정확한 BMI 기준이 적용돼요.';
+    }
   }
 
-  document.getElementById('saveBtn').onclick = async()=>{
-    const dateVal=document.getElementById('iDate').value;
-    const h=parseFloat(document.getElementById('iHeight').value);
-    const w=parseFloat(document.getElementById('iWeight').value);
-    if(!dateVal){alert('날짜를 선택해 주세요');return;}
-    if(!h||!w||h<100||h>250||w<20||w>300){alert('키와 체중을 올바르게 입력해 주세요');return;}
-    const bmi=parseFloat((w/((h/100)**2)).toFixed(2));
-    const exist=recs.find(r=>r.date===dateVal);
-    if(exist) await deleteDoc(doc(db,`users/${uid}/body_records`,exist._id));
-    await addDoc(col(),{date:dateVal,height:h,weight:w,bmi});
+  document.getElementById('saveBtn').onclick = async() => {
+    const dateVal = document.getElementById('iDate').value;
+    const h = parseFloat(document.getElementById('iHeight').value);
+    const w = parseFloat(document.getElementById('iWeight').value);
+    if(!dateVal){ alert('날짜를 선택해 주세요'); return; }
+    if(!h||!w||h<100||h>250||w<20||w>300){ alert('키와 체중을 올바르게 입력해 주세요'); return; }
+    const bmi = parseFloat((w/((h/100)**2)).toFixed(2));
+    const exist = recs.find(r=>r.date===dateVal);
+    if(exist) await deleteDoc(doc(db, `users/${uid}/body_records`, exist._id));
+    await addDoc(col(), {date:dateVal, height:h, weight:w, bmi});
     await load();
   };
 
-  window.delRec = async(id)=>{
+  window.delRec = async(id) => {
     if(!confirm('이 기록을 삭제할까요?')) return;
-    await deleteDoc(doc(db,`users/${uid}/body_records`,id));
+    await deleteDoc(doc(db, `users/${uid}/body_records`, id));
     await load();
   };
 
   function renderHist(){
-    const el=document.getElementById('histList');
-    if(!recs.length){el.innerHTML='<div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px">기록이 없어요</div>';return;}
-    el.innerHTML=[...recs].reverse().map(r=>{
-      const {l}=bmiInfo(r.bmi);
+    const el = document.getElementById('histList');
+    const age = getAge(profile.birth);
+    const gender = profile.gender || 'male';
+    if(!recs.length){ el.innerHTML='<div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px">기록이 없어요</div>'; return; }
+    el.innerHTML = [...recs].reverse().map(r => {
+      const {l} = bmiInfo(r.bmi, age, gender);
       return `<div class="h-row"><span class="h-date">${r.date}</span><div class="h-vals"><span class="h-w">${r.weight} kg</span><span class="h-bmi">BMI ${r.bmi} · ${l}</span></div><button class="del-btn" onclick="delRec('${r._id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>`;
     }).join('');
   }
 
   function renderChart(){
-    const canvas=document.getElementById('chart');
-    const ctx=canvas.getContext('2d');
-    const W=canvas.parentElement.clientWidth; canvas.width=W; canvas.height=180;
+    const canvas = document.getElementById('chart');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.parentElement.clientWidth; canvas.width=W; canvas.height=180;
     ctx.clearRect(0,0,W,180);
-    if(recs.length<2){ctx.fillStyle='#b0b8c1';ctx.font='13px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillText('기록이 2개 이상이면 그래프가 표시돼요',W/2,90);return;}
+    if(recs.length<2){ ctx.fillStyle='#b0b8c1'; ctx.font='13px -apple-system,sans-serif'; ctx.textAlign='center'; ctx.fillText('기록이 2개 이상이면 그래프가 표시돼요',W/2,90); return; }
     const ws=recs.map(r=>r.weight), minW=Math.min(...ws)-2, maxW=Math.max(...ws)+2;
     const pL=40,pR=16,pT=16,pB=36,gW=W-pL-pR,gH=180-pT-pB;
     const xOf=i=>pL+(i/(recs.length-1))*gW, yOf=w=>pT+(1-(w-minW)/(maxW-minW))*gH;
-    ctx.strokeStyle='#f2f4f6';ctx.lineWidth=1;
-    for(let i=0;i<=4;i++){const y=pT+(i/4)*gH;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(W-pR,y);ctx.stroke();ctx.fillStyle='#b0b8c1';ctx.font='11px -apple-system,sans-serif';ctx.textAlign='right';ctx.fillText((maxW-(i/4)*(maxW-minW)).toFixed(1),pL-4,y+4);}
-    ctx.beginPath();ctx.strokeStyle='#3182f6';ctx.lineWidth=2.5;ctx.lineJoin='round';
-    recs.forEach((r,i)=>i===0?ctx.moveTo(xOf(i),yOf(r.weight)):ctx.lineTo(xOf(i),yOf(r.weight)));ctx.stroke();
-    recs.forEach((r,i)=>{ctx.beginPath();ctx.arc(xOf(i),yOf(r.weight),4,0,Math.PI*2);ctx.fillStyle='#3182f6';ctx.fill();ctx.beginPath();ctx.arc(xOf(i),yOf(r.weight),2,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();});
-    ctx.fillStyle='#b0b8c1';ctx.font='11px -apple-system,sans-serif';ctx.textAlign='center';
-    ctx.fillText(recs[0].date.slice(5),xOf(0),174);ctx.fillText(recs[recs.length-1].date.slice(5),xOf(recs.length-1),174);
+    ctx.strokeStyle='#f2f4f6'; ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){ const y=pT+(i/4)*gH; ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(W-pR,y); ctx.stroke(); ctx.fillStyle='#b0b8c1'; ctx.font='11px -apple-system,sans-serif'; ctx.textAlign='right'; ctx.fillText((maxW-(i/4)*(maxW-minW)).toFixed(1),pL-4,y+4); }
+    ctx.beginPath(); ctx.strokeStyle='#3182f6'; ctx.lineWidth=2.5; ctx.lineJoin='round';
+    recs.forEach((r,i)=>i===0?ctx.moveTo(xOf(i),yOf(r.weight)):ctx.lineTo(xOf(i),yOf(r.weight))); ctx.stroke();
+    recs.forEach((r,i)=>{ ctx.beginPath(); ctx.arc(xOf(i),yOf(r.weight),4,0,Math.PI*2); ctx.fillStyle='#3182f6'; ctx.fill(); ctx.beginPath(); ctx.arc(xOf(i),yOf(r.weight),2,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill(); });
+    ctx.fillStyle='#b0b8c1'; ctx.font='11px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText(recs[0].date.slice(5),xOf(0),174); ctx.fillText(recs[recs.length-1].date.slice(5),xOf(recs.length-1),174);
   }
 </script>
 </body>

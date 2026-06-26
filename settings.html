@@ -14,11 +14,19 @@
     .sec-label{font-size:12px;color:#6b7684;font-weight:500;padding:0 4px;margin:20px 0 8px}
     .sec-label:first-child{margin-top:0}
     .card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:12px}
-    .profile-row{display:flex;align-items:center;gap:14px;padding:8px 0}
+    .profile-row{display:flex;align-items:center;gap:14px;padding:4px 0 16px}
     .p-avatar{width:52px;height:52px;border-radius:50%;background:#e8f3ff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#3182f6;overflow:hidden;flex-shrink:0}
     .p-avatar img{width:100%;height:100%;object-fit:cover}
     .p-name{font-size:16px;font-weight:700}
     .p-email{font-size:13px;color:#6b7684;margin-top:2px}
+    label{font-size:13px;color:#6b7684;font-weight:500;display:block;margin-bottom:6px}
+    input[type=date], select{width:100%;padding:13px 16px;border:1.5px solid #f2f4f6;border-radius:12px;font-size:16px;color:#191f28;background:#f9fafb;outline:none;font-family:inherit;margin-bottom:14px}
+    input:focus, select:focus{border-color:#3182f6;background:#fff}
+    .gender-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+    .g-btn{padding:13px;border:1.5px solid #f2f4f6;border-radius:12px;background:#fff;cursor:pointer;font-size:15px;font-weight:600;color:#6b7684;font-family:inherit;transition:all 0.15s}
+    .g-btn.on{border-color:#3182f6;background:#e8f3ff;color:#3182f6}
+    .btn-primary{width:100%;background:#3182f6;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+    .btn-primary:active{background:#1a6fe0}
     .s-row{display:flex;align-items:center;padding:16px 0;border-bottom:1px solid #f2f4f6;gap:14px;cursor:pointer}
     .s-row:last-child{border-bottom:none}
     .s-icon{width:36px;height:36px;background:#f2f4f6;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#3182f6;flex-shrink:0}
@@ -26,7 +34,7 @@
     .s-name{font-size:15px;font-weight:500}
     .s-desc{font-size:12px;color:#6b7684;margin-top:2px}
     .s-arrow{color:#b0b8c1;display:flex;align-items:center}
-    .btn-danger{width:100%;background:none;color:#f44336;border:1.5px solid #ffd0ce;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:10px}
+    .btn-danger{width:100%;background:none;color:#f44336;border:1.5px solid #ffd0ce;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
     .app-info{text-align:center;padding:32px 0 16px}
     .app-logo{font-size:24px;font-weight:700;color:#3182f6;letter-spacing:-1px}
     .app-ver{font-size:13px;color:#b0b8c1;margin-top:4px}
@@ -43,6 +51,7 @@
   <h2>설정</h2>
 </header>
 <main>
+  <!-- 프로필 -->
   <div class="sec-label">프로필</div>
   <div class="card">
     <div class="profile-row">
@@ -52,8 +61,20 @@
         <div class="p-email" id="pEmail">-</div>
       </div>
     </div>
+
+    <label>생년월일</label>
+    <input type="date" id="iBirth" max="" />
+
+    <label>성별</label>
+    <div class="gender-btns">
+      <button class="g-btn" data-g="male">남성</button>
+      <button class="g-btn" data-g="female">여성</button>
+    </div>
+
+    <button class="btn-primary" id="saveProfileBtn">저장하기</button>
   </div>
 
+  <!-- 데이터 -->
   <div class="sec-label">데이터</div>
   <div class="card">
     <div class="s-row" id="exportBtn">
@@ -68,6 +89,7 @@
     </div>
   </div>
 
+  <!-- 계정 -->
   <div class="sec-label">계정</div>
   <button class="btn-danger" id="btnLogout">로그아웃</button>
 
@@ -87,7 +109,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, doc, setDoc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const app = initializeApp({
     apiKey:"AIzaSyBDIgsg99fxj2RFeEeFVD92mNltAweDpd8",
@@ -99,33 +121,79 @@
   });
   const auth = getAuth(app);
   const db = getFirestore(app);
+  let uid, selectedGender = null;
+
+  // 생년월일 max = 오늘
+  document.getElementById('iBirth').max = new Date().toISOString().slice(0,10);
+
+  // 성별 버튼
+  document.querySelectorAll('.g-btn').forEach(btn => {
+    btn.onclick = () => {
+      selectedGender = btn.dataset.g;
+      document.querySelectorAll('.g-btn').forEach(b => b.classList.toggle('on', b.dataset.g === selectedGender));
+    };
+  });
 
   function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
 
-  onAuthStateChanged(auth, user=>{
-    if(!user){location.href='index.html';return;}
+  onAuthStateChanged(auth, async user => {
+    if(!user){ location.href='index.html'; return; }
+    uid = user.uid;
+
+    // 프로필 표시
     if(user.photoURL) document.getElementById('pAvatar').innerHTML=`<img src="${user.photoURL}">`;
     else document.getElementById('pInitial').textContent=(user.displayName||user.email||'?')[0].toUpperCase();
-    document.getElementById('pName').textContent=user.displayName||'이름 없음';
-    document.getElementById('pEmail').textContent=user.email||'';
+    document.getElementById('pName').textContent = user.displayName || '이름 없음';
+    document.getElementById('pEmail').textContent = user.email || '';
 
-    document.getElementById('btnLogout').onclick=async()=>{
+    // 저장된 프로필 불러오기
+    try {
+      const snap = await getDoc(doc(db, `users/${uid}/profile`, 'info'));
+      if(snap.exists()){
+        const data = snap.data();
+        if(data.birth) document.getElementById('iBirth').value = data.birth;
+        if(data.gender){
+          selectedGender = data.gender;
+          document.querySelectorAll('.g-btn').forEach(b => b.classList.toggle('on', b.dataset.g === selectedGender));
+        }
+      }
+    } catch(e){}
+
+    // 프로필 저장
+    document.getElementById('saveProfileBtn').onclick = async () => {
+      const birth = document.getElementById('iBirth').value;
+      if(!birth){ alert('생년월일을 입력해 주세요'); return; }
+      if(!selectedGender){ alert('성별을 선택해 주세요'); return; }
+      try {
+        await setDoc(doc(db, `users/${uid}/profile`, 'info'), { birth, gender: selectedGender });
+        toast('프로필이 저장됐어요');
+      } catch(e){ alert('저장에 실패했어요'); }
+    };
+
+    // 로그아웃
+    document.getElementById('btnLogout').onclick = async () => {
       if(!confirm('로그아웃 할까요?')) return;
       await signOut(auth); location.href='index.html';
     };
 
-    document.getElementById('exportBtn').onclick=async()=>{
-      try{
-        const [bodySnap,exSnap]=await Promise.all([
-          getDocs(query(collection(db,`users/${user.uid}/body_records`),orderBy('date'))),
-          getDocs(query(collection(db,`users/${user.uid}/exercise_records`),orderBy('date')))
+    // 데이터 내보내기
+    document.getElementById('exportBtn').onclick = async () => {
+      try {
+        const [bodySnap, exSnap] = await Promise.all([
+          getDocs(query(collection(db,`users/${uid}/body_records`), orderBy('date'))),
+          getDocs(query(collection(db,`users/${uid}/exercise_records`), orderBy('date')))
         ]);
-        const data={body:bodySnap.docs.map(d=>d.data()),exercise:exSnap.docs.map(d=>d.data()),exportedAt:new Date().toISOString()};
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
-        a.download=`mn-health-${new Date().toISOString().slice(0,10)}.json`; a.click();
+        const data = {
+          body: bodySnap.docs.map(d=>d.data()),
+          exercise: exSnap.docs.map(d=>d.data()),
+          exportedAt: new Date().toISOString()
+        };
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+        a.download = `mn-health-${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
         toast('데이터를 내보냈어요');
-      }catch(e){alert('내보내기에 실패했어요');}
+      } catch(e){ alert('내보내기에 실패했어요'); }
     };
   });
 </script>
