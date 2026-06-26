@@ -214,6 +214,10 @@
   <div class="card">
     <div class="card-label" style="margin-bottom:16px">기록 추가</div>
     <div class="form-row">
+      <label>날짜</label>
+      <input type="date" id="inputDate" />
+    </div>
+    <div class="form-row">
       <label>키 (cm)</label>
       <input type="number" id="inputHeight" placeholder="170" step="0.1" />
     </div>
@@ -346,6 +350,12 @@
   }
 
   function loadLatestBMI() {
+    // 날짜 input: 오늘로 초기화, 미래 막기
+    const today = new Date().toISOString().slice(0,10);
+    const dateInput = document.getElementById('inputDate');
+    dateInput.value = today;
+    dateInput.max = today;
+
     const records = getRecords();
     if (records.length === 0) return;
     const latest = records[records.length - 1];
@@ -479,24 +489,24 @@
   // saveRecord에 Firestore 저장 추가
   const _origSave = saveRecord;
   window.saveRecord = async function() {
+    const dateVal = document.getElementById('inputDate').value;
     const height = parseFloat(document.getElementById('inputHeight').value);
     const weight = parseFloat(document.getElementById('inputWeight').value);
+    if (!dateVal) { alert('날짜를 선택해 주세요.'); return; }
     if (!height || !weight || height < 100 || height > 250 || weight < 20 || weight > 300) {
       alert('키와 체중을 올바르게 입력해 주세요.');
       return;
     }
     const bmi = weight / ((height / 100) ** 2);
-    const today = new Date().toISOString().slice(0, 10);
     const records = getRecords();
-    const existing = records.find(r => r.date === today);
+    const existing = records.find(r => r.date === dateVal);
 
     // Firestore에 저장
     try {
       if (existing && existing._id) {
-        // 같은 날 기록 덮어쓰기: 삭제 후 재추가
         await deleteDoc(doc(db, "body_records", existing._id));
       }
-      await addDoc(COL, { date: today, height, weight, bmi: parseFloat(bmi.toFixed(2)) });
+      await addDoc(COL, { date: dateVal, height, weight, bmi: parseFloat(bmi.toFixed(2)) });
     } catch(e) { console.warn("Firestore 저장 실패:", e); }
 
     localStorage.setItem('mn_height', height);

@@ -220,6 +220,10 @@
     <div class="exercise-list" id="exerciseGrid"></div>
 
     <div class="form-row">
+      <label>날짜</label>
+      <input type="date" id="inputDate" />
+    </div>
+    <div class="form-row">
       <label>운동 시간 (분)</label>
       <input type="number" id="inputMinutes" placeholder="30" min="1" max="300" oninput="updatePreview()" />
     </div>
@@ -350,12 +354,14 @@
   }
 
   async function addRecord() {
+    const dateVal = document.getElementById('inputDate').value;
     const minutes = parseFloat(document.getElementById('inputMinutes').value);
     if (!selectedEx || !minutes) return;
+    if (!dateVal) { alert('날짜를 선택해 주세요.'); return; }
 
     const kcal = calcKcal(selectedEx.met, minutes, getWeight());
     const record = {
-      date: new Date().toISOString().slice(0,10),
+      date: dateVal,
       name: selectedEx.name,
       met: selectedEx.met,
       minutes: Math.round(minutes),
@@ -482,6 +488,12 @@
   window.deleteRecord = deleteRecord;
   window.selectEx = selectEx;
   window.updatePreview = updatePreview;
+
+  // 날짜 초기화 (오늘, 미래 막기)
+  const today = new Date().toISOString().slice(0,10);
+  const dateInput = document.getElementById('inputDate');
+  dateInput.value = today;
+  dateInput.max = today;
 
   renderExGrid();
   syncFromFirestore();
