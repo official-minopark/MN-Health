@@ -265,7 +265,22 @@
   </a>
 </nav>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDIgsg99fxj2RFeEeFVD92mNltAweDpd8",
+    authDomain: "mn-health.firebaseapp.com",
+    projectId: "mn-health",
+    storageBucket: "mn-health.firebasestorage.app",
+    messagingSenderId: "442489563296",
+    appId: "1:442489563296:web:c2a044ee36b1a1c59641c5"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const COL = collection(db, "exercise_records");
+
   // MET 값 기반 운동 목록
   const EXERCISES = [
     { name: '걷기', met: 3.5 },
@@ -334,13 +349,12 @@
     btn.disabled = false;
   }
 
-  function addRecord() {
+  async function addRecord() {
     const minutes = parseFloat(document.getElementById('inputMinutes').value);
     if (!selectedEx || !minutes) return;
 
     const kcal = calcKcal(selectedEx.met, minutes, getWeight());
     const record = {
-      id: Date.now(),
       date: new Date().toISOString().slice(0,10),
       name: selectedEx.name,
       met: selectedEx.met,
@@ -348,11 +362,20 @@
       kcal: Math.round(kcal),
     };
 
+    // Firestore 저장
+    try {
+      const docRef = await addDoc(COL, record);
+      record._id = docRef.id;
+      record.id = docRef.id;
+    } catch(e) {
+      console.warn("Firestore 저장 실패:", e);
+      record.id = Date.now();
+    }
+
     const records = getRecords();
     records.push(record);
     saveRecords(records);
 
-    // 초기화
     document.getElementById('inputMinutes').value = '';
     document.querySelectorAll('.ex-btn').forEach(b => b.classList.remove('selected'));
     selectedEx = null;
@@ -363,10 +386,14 @@
     renderWeekBars();
   }
 
-  function deleteRecord(id) {
+  async function deleteRecord(id) {
     if (!confirm('이 기록을 삭제할까요?')) return;
-    const records = getRecords().filter(r => r.id !== id);
-    saveRecords(records);
+    const records = getRecords();
+    const target = records.find(r => r.id === id || r._id === id);
+    if (target && target._id) {
+      try { await deleteDoc(doc(db, "exercise_records", target._id)); } catch(e) {}
+    }
+    saveRecords(records.filter(r => r.id !== id && r._id !== id));
     renderRecords();
     renderWeekBars();
   }
@@ -439,9 +466,25 @@
     }).join('');
   }
 
+  // Firestore → localStorage 동기화
+  async function syncFromFirestore() {
+    try {
+      const snap = await getDocs(query(COL, orderBy("date")));
+      const records = snap.docs.map(d => ({ ...d.data(), _id: d.id, id: d.id }));
+      localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+    } catch(e) { console.warn("Firestore 동기화 실패:", e); }
+    renderRecords();
+    renderWeekBars();
+  }
+
+  // onclick 전역 노출
+  window.addRecord = addRecord;
+  window.deleteRecord = deleteRecord;
+  window.selectEx = selectEx;
+  window.updatePreview = updatePreview;
+
   renderExGrid();
-  renderRecords();
-  renderWeekBars();
+  syncFromFirestore();
 </script>
 </body>
 </html>

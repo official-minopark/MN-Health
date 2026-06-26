@@ -270,7 +270,7 @@
   </a>
 </nav>
 
-<script>
+<script type="module">
   const RECORDS_KEY = 'mn_body_records';
 
   function getRecords() {
@@ -448,9 +448,83 @@
     ctx.fillText(records[records.length-1].date.slice(5), xOf(records.length-1), 180 - 8);
   }
 
-  loadLatestBMI();
-  renderHistory();
-  renderChart();
+  // ── Firebase 설정 ──
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBDIgsg99fxj2RFeEeFVD92mNltAweDpd8",
+    authDomain: "mn-health.firebaseapp.com",
+    projectId: "mn-health",
+    storageBucket: "mn-health.firebasestorage.app",
+    messagingSenderId: "442489563296",
+    appId: "1:442489563296:web:c2a044ee36b1a1c59641c5"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const COL = collection(db, "body_records");
+
+  // Firestore → localStorage 동기화 후 렌더링
+  async function syncFromFirestore() {
+    try {
+      const snap = await getDocs(query(COL, orderBy("date")));
+      const records = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
+      localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+    } catch(e) { console.warn("Firestore 동기화 실패, 로컬 사용:", e); }
+    loadLatestBMI();
+    renderHistory();
+    renderChart();
+  }
+
+  // saveRecord에 Firestore 저장 추가
+  const _origSave = saveRecord;
+  window.saveRecord = async function() {
+    const height = parseFloat(document.getElementById('inputHeight').value);
+    const weight = parseFloat(document.getElementById('inputWeight').value);
+    if (!height || !weight || height < 100 || height > 250 || weight < 20 || weight > 300) {
+      alert('키와 체중을 올바르게 입력해 주세요.');
+      return;
+    }
+    const bmi = weight / ((height / 100) ** 2);
+    const today = new Date().toISOString().slice(0, 10);
+    const records = getRecords();
+    const existing = records.find(r => r.date === today);
+
+    // Firestore에 저장
+    try {
+      if (existing && existing._id) {
+        // 같은 날 기록 덮어쓰기: 삭제 후 재추가
+        await deleteDoc(doc(db, "body_records", existing._id));
+      }
+      await addDoc(COL, { date: today, height, weight, bmi: parseFloat(bmi.toFixed(2)) });
+    } catch(e) { console.warn("Firestore 저장 실패:", e); }
+
+    localStorage.setItem('mn_height', height);
+    localStorage.setItem('mn_weight', weight);
+    updateBMIDisplay(bmi);
+    await syncFromFirestore();
+  };
+
+  // deleteRecord에 Firestore 삭제 추가
+  window.deleteRecord = async function(date) {
+    if (!confirm('이 기록을 삭제할까요?')) return;
+    const records = getRecords();
+    const target = records.find(r => r.date === date);
+    if (target && target._id) {
+      try { await deleteDoc(doc(db, "body_records", target._id)); } catch(e) {}
+    }
+    const newRecs = records.filter(r => r.date !== date);
+    saveRecords(newRecs);
+    renderHistory();
+    renderChart();
+    loadLatestBMI();
+  };
+
+  // onclick 전역 노출
+  window.saveRecord = window.saveRecord || saveRecord;
+  window.deleteRecord = window.deleteRecord || deleteRecord;
+
+  syncFromFirestore();
 </script>
 </body>
 </html>
