@@ -6,203 +6,52 @@
   <title>운동 기록 - MN Health</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      background: #f9fafb;
-      color: #191f28;
-      min-height: 100vh;
-    }
-    header {
-      background: #fff;
-      border-bottom: 1px solid #f2f4f6;
-      padding: 0 20px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: #f9fafb; color: #191f28; min-height: 100vh; }
+    header { background: #fff; border-bottom: 1px solid #f2f4f6; padding: 0 20px; height: 56px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
     header a { color: #191f28; text-decoration: none; display: flex; align-items: center; }
     header h2 { font-size: 17px; font-weight: 700; }
     main { max-width: 480px; margin: 0 auto; padding: 24px 20px 100px; }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
+    .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
     .card-label { font-size: 12px; color: #6b7684; font-weight: 500; margin-bottom: 16px; }
-
-    /* 운동 선택 */
-    .exercise-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .ex-btn {
-      padding: 12px;
-      border: 1.5px solid #f2f4f6;
-      border-radius: 12px;
-      background: #fff;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.15s;
-      font-family: inherit;
-    }
-    .ex-btn.selected {
-      border-color: #3182f6;
-      background: #e8f3ff;
-    }
+    .exercise-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .ex-btn { padding: 12px; border: 1.5px solid #f2f4f6; border-radius: 12px; background: #fff; cursor: pointer; text-align: left; transition: all 0.15s; font-family: inherit; }
+    .ex-btn.selected { border-color: #3182f6; background: #e8f3ff; }
     .ex-btn-name { font-size: 14px; font-weight: 600; color: #191f28; display: block; }
     .ex-btn-met { font-size: 12px; color: #6b7684; margin-top: 2px; display: block; }
-
     .form-row { margin-bottom: 14px; }
     .form-row label { font-size: 13px; color: #6b7684; font-weight: 500; display: block; margin-bottom: 6px; }
-    .form-row input, .form-row select {
-      width: 100%;
-      padding: 13px 16px;
-      border: 1.5px solid #f2f4f6;
-      border-radius: 12px;
-      font-size: 16px;
-      color: #191f28;
-      background: #f9fafb;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
-    }
-    .form-row input:focus, .form-row select:focus { border-color: #3182f6; background: #fff; }
-
-    /* 칼로리 미리보기 */
-    .kcal-preview {
-      background: #e8f3ff;
-      border-radius: 12px;
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
+    .form-row input { width: 100%; padding: 13px 16px; border: 1.5px solid #f2f4f6; border-radius: 12px; font-size: 16px; color: #191f28; background: #f9fafb; outline: none; transition: border-color 0.2s; font-family: inherit; }
+    .form-row input:focus { border-color: #3182f6; background: #fff; }
+    .kcal-preview { background: #e8f3ff; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .kcal-preview-label { font-size: 13px; color: #3182f6; font-weight: 500; }
-    .kcal-preview-value { font-size: 22px; font-weight: 700; color: #3182f6; letter-spacing: -0.5px; }
-
-    .btn-primary {
-      width: 100%;
-      background: #3182f6;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.15s;
-    }
-    .btn-primary:active { background: #1a6fe0; }
+    .kcal-preview-value { font-size: 22px; font-weight: 700; color: #3182f6; }
+    .btn-primary { width: 100%; background: #3182f6; color: #fff; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .btn-primary:disabled { background: #c2d6f8; cursor: not-allowed; }
-
-    /* 날짜별 기록 */
     .date-section { margin-bottom: 4px; }
-    .date-header {
-      font-size: 13px;
-      font-weight: 600;
-      color: #6b7684;
-      padding: 8px 0 4px;
-    }
-    .record-row {
-      background: #fff;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
+    .date-header { font-size: 13px; font-weight: 600; color: #6b7684; padding: 8px 0 4px; }
+    .record-row { background: #fff; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .record-info { flex: 1; }
-    .record-name { font-size: 15px; font-weight: 600; color: #191f28; }
+    .record-name { font-size: 15px; font-weight: 600; }
     .record-detail { font-size: 12px; color: #6b7684; margin-top: 2px; }
     .record-kcal { font-size: 16px; font-weight: 700; color: #3182f6; margin-right: 12px; }
-    .record-del {
-      background: none;
-      border: none;
-      color: #b0b8c1;
-      cursor: pointer;
-      padding: 4px;
-      display: flex;
-      align-items: center;
-    }
-
-    /* 주간 그래프 */
-    .week-bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      height: 100px;
-      margin: 12px 0 8px;
-    }
-    .week-bar-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      height: 100%;
-      justify-content: flex-end;
-    }
-    .week-bar {
-      width: 100%;
-      background: #3182f6;
-      border-radius: 6px 6px 0 0;
-      min-height: 4px;
-      transition: height 0.4s ease;
-    }
+    .record-del { background: none; border: none; color: #b0b8c1; cursor: pointer; padding: 4px; display: flex; align-items: center; }
+    .week-bars { display: flex; align-items: flex-end; gap: 8px; height: 100px; margin: 12px 0 8px; }
+    .week-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+    .week-bar { width: 100%; background: #3182f6; border-radius: 6px 6px 0 0; min-height: 4px; transition: height 0.4s ease; }
     .week-bar.today { background: #1a6fe0; }
     .week-bar-label { font-size: 11px; color: #b0b8c1; }
     .week-bar-kcal { font-size: 10px; color: #6b7684; margin-bottom: 2px; }
-
-    nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: #fff;
-      border-top: 1px solid #f2f4f6;
-      display: flex;
-      height: 64px;
-      z-index: 100;
-    }
-    nav a {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-decoration: none;
-      color: #b0b8c1;
-      font-size: 10px;
-      font-weight: 500;
-    }
+    nav { position: fixed; bottom:0;left:0;right:0; background:#fff; border-top:1px solid #f2f4f6; display:flex; height:64px; z-index:100; }
+    nav a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:#b0b8c1; font-size:10px; font-weight:500; }
     nav a.active { color: #3182f6; }
   </style>
 </head>
 <body>
-
 <header>
-  <a href="index.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  </a>
+  <a href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a>
   <h2>운동 기록</h2>
 </header>
-
 <main>
-  <!-- 주간 칼로리 그래프 -->
   <div class="card">
     <div class="card-label">이번 주 소모 칼로리</div>
     <div class="week-bars" id="weekBars"></div>
@@ -212,291 +61,162 @@
     </div>
   </div>
 
-  <!-- 운동 추가 카드 -->
   <div class="card">
     <div class="card-label">운동 추가</div>
-
-    <!-- 운동 종류 선택 -->
     <div class="exercise-list" id="exerciseGrid"></div>
-
     <div class="form-row">
       <label>날짜</label>
       <input type="date" id="inputDate" />
     </div>
     <div class="form-row">
       <label>운동 시간 (분)</label>
-      <input type="number" id="inputMinutes" placeholder="30" min="1" max="300" oninput="updatePreview()" />
+      <input type="number" id="inputMinutes" placeholder="30" min="1" max="300" />
     </div>
-
     <div class="kcal-preview">
       <span class="kcal-preview-label">예상 소모 칼로리</span>
       <span class="kcal-preview-value"><span id="previewKcal">0</span> kcal</span>
     </div>
-
-    <button class="btn-primary" id="addBtn" onclick="addRecord()" disabled>운동 추가</button>
+    <button class="btn-primary" id="addBtn" disabled>운동 추가</button>
   </div>
 
-  <!-- 기록 목록 -->
   <div id="recordList"></div>
 </main>
 
 <nav>
-  <a href="index.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      <polyline points="9 22 9 12 15 12 15 22"/>
-    </svg>
-    홈
-  </a>
-  <a href="body.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-    신체
-  </a>
-  <a href="exercise.html" class="active">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-    </svg>
-    운동
-  </a>
-  <a href="settings.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="8" r="4"/>
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-    </svg>
-    설정
-  </a>
+  <a href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈</a>
+  <a href="body.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>신체</a>
+  <a href="exercise.html" class="active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>운동</a>
+  <a href="settings.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>설정</a>
 </nav>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { auth, onAuthStateChanged, userCol, userDoc, orderBy, getDocs, addDoc, deleteDoc, query } from './firebase.js';
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBDIgsg99fxj2RFeEeFVD92mNltAweDpd8",
-    authDomain: "mn-health.firebaseapp.com",
-    projectId: "mn-health",
-    storageBucket: "mn-health.firebasestorage.app",
-    messagingSenderId: "442489563296",
-    appId: "1:442489563296:web:c2a044ee36b1a1c59641c5"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const COL = collection(db, "exercise_records");
-
-  // MET 값 기반 운동 목록
   const EXERCISES = [
-    { name: '걷기', met: 3.5 },
-    { name: '달리기', met: 8.0 },
-    { name: '자전거', met: 6.0 },
-    { name: '수영', met: 7.0 },
-    { name: '줄넘기', met: 10.0 },
-    { name: '등산', met: 7.5 },
-    { name: '헬스', met: 5.0 },
-    { name: '축구', met: 8.0 },
-    { name: '농구', met: 7.0 },
-    { name: '요가', met: 3.0 },
+    { name:'걷기', met:3.5 }, { name:'달리기', met:8.0 }, { name:'자전거', met:6.0 },
+    { name:'수영', met:7.0 }, { name:'줄넘기', met:10.0 }, { name:'등산', met:7.5 },
+    { name:'헬스', met:5.0 }, { name:'축구', met:8.0 }, { name:'농구', met:7.0 }, { name:'요가', met:3.0 },
   ];
 
-  const RECORDS_KEY = 'mn_exercise';
-  let selectedEx = null;
+  let uid = null, records = [], selectedEx = null;
 
-  function getRecords() {
-    return JSON.parse(localStorage.getItem(RECORDS_KEY) || '[]');
-  }
-  function saveRecords(r) {
-    localStorage.setItem(RECORDS_KEY, JSON.stringify(r));
-    // 홈용 캐시 갱신
-    const today = new Date().toISOString().slice(0,10);
-    const todayKcal = r.filter(x => x.date === today).reduce((s, x) => s + x.kcal, 0);
-    localStorage.setItem('mn_today_kcal', Math.round(todayKcal));
-  }
+  // 날짜 초기화
+  const today = new Date().toISOString().slice(0,10);
+  const dateInput = document.getElementById('inputDate');
+  dateInput.value = today; dateInput.max = today;
 
-  function getWeight() {
-    return parseFloat(localStorage.getItem('mn_weight') || '65');
-  }
+  const minutesInput = document.getElementById('inputMinutes');
+  const addBtn = document.getElementById('addBtn');
 
-  function calcKcal(met, minutes, weight) {
-    return met * weight * (minutes / 60);
-  }
+  function getWeight() { return parseFloat(localStorage.getItem('mn_weight') || '65'); }
+  function calcKcal(met, min, w) { return met * w * (min / 60); }
 
-  // 운동 버튼 렌더링
-  function renderExGrid() {
-    const grid = document.getElementById('exerciseGrid');
-    grid.innerHTML = EXERCISES.map((ex, i) =>
-      `<button class="ex-btn" onclick="selectEx(${i})">
-        <span class="ex-btn-name">${ex.name}</span>
-        <span class="ex-btn-met">MET ${ex.met}</span>
-      </button>`
-    ).join('');
-  }
-
-  function selectEx(i) {
+  // 운동 버튼
+  document.getElementById('exerciseGrid').innerHTML = EXERCISES.map((ex, i) =>
+    `<button class="ex-btn" data-i="${i}"><span class="ex-btn-name">${ex.name}</span><span class="ex-btn-met">MET ${ex.met}</span></button>`
+  ).join('');
+  document.getElementById('exerciseGrid').addEventListener('click', e => {
+    const btn = e.target.closest('.ex-btn');
+    if (!btn) return;
+    const i = parseInt(btn.dataset.i);
     selectedEx = EXERCISES[i];
-    document.querySelectorAll('.ex-btn').forEach((btn, j) => {
-      btn.classList.toggle('selected', j === i);
-    });
+    document.querySelectorAll('.ex-btn').forEach((b,j) => b.classList.toggle('selected', j===i));
     updatePreview();
-  }
+  });
 
   function updatePreview() {
-    const minutes = parseFloat(document.getElementById('inputMinutes').value);
-    const btn = document.getElementById('addBtn');
-    if (!selectedEx || !minutes || minutes <= 0) {
-      document.getElementById('previewKcal').textContent = '0';
-      btn.disabled = true;
-      return;
-    }
-    const kcal = calcKcal(selectedEx.met, minutes, getWeight());
-    document.getElementById('previewKcal').textContent = Math.round(kcal);
-    btn.disabled = false;
+    const min = parseFloat(minutesInput.value);
+    if (!selectedEx || !min || min <= 0) { document.getElementById('previewKcal').textContent = '0'; addBtn.disabled = true; return; }
+    document.getElementById('previewKcal').textContent = Math.round(calcKcal(selectedEx.met, min, getWeight()));
+    addBtn.disabled = false;
+  }
+  minutesInput.addEventListener('input', updatePreview);
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { location.href = 'index.html'; return; }
+    uid = user.uid;
+    await syncRecords();
+  });
+
+  async function syncRecords() {
+    try {
+      const snap = await getDocs(query(userCol(uid, 'exercise_records'), orderBy('date')));
+      records = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
+    } catch(e) { console.warn(e); }
+    renderRecords();
+    renderWeekBars();
   }
 
-  async function addRecord() {
-    const dateVal = document.getElementById('inputDate').value;
-    const minutes = parseFloat(document.getElementById('inputMinutes').value);
-    if (!selectedEx || !minutes) return;
-    if (!dateVal) { alert('날짜를 선택해 주세요.'); return; }
-
-    const kcal = calcKcal(selectedEx.met, minutes, getWeight());
-    const record = {
-      date: dateVal,
-      name: selectedEx.name,
-      met: selectedEx.met,
-      minutes: Math.round(minutes),
-      kcal: Math.round(kcal),
-    };
-
-    // Firestore 저장
+  addBtn.onclick = async () => {
+    const dateVal = dateInput.value;
+    const min = parseFloat(minutesInput.value);
+    if (!selectedEx || !min || !dateVal) return;
+    const kcal = Math.round(calcKcal(selectedEx.met, min, getWeight()));
     try {
-      const docRef = await addDoc(COL, record);
-      record._id = docRef.id;
-      record.id = docRef.id;
-    } catch(e) {
-      console.warn("Firestore 저장 실패:", e);
-      record.id = Date.now();
-    }
-
-    const records = getRecords();
-    records.push(record);
-    saveRecords(records);
-
-    document.getElementById('inputMinutes').value = '';
+      await addDoc(userCol(uid, 'exercise_records'), { date: dateVal, name: selectedEx.name, met: selectedEx.met, minutes: Math.round(min), kcal });
+    } catch(e) { alert('저장에 실패했어요.'); return; }
+    minutesInput.value = '';
     document.querySelectorAll('.ex-btn').forEach(b => b.classList.remove('selected'));
     selectedEx = null;
     document.getElementById('previewKcal').textContent = '0';
-    document.getElementById('addBtn').disabled = true;
-
-    renderRecords();
-    renderWeekBars();
-  }
+    addBtn.disabled = true;
+    await syncRecords();
+  };
 
   async function deleteRecord(id) {
     if (!confirm('이 기록을 삭제할까요?')) return;
-    const records = getRecords();
-    const target = records.find(r => r.id === id || r._id === id);
-    if (target && target._id) {
-      try { await deleteDoc(doc(db, "exercise_records", target._id)); } catch(e) {}
-    }
-    saveRecords(records.filter(r => r.id !== id && r._id !== id));
-    renderRecords();
-    renderWeekBars();
+    try { await deleteDoc(userDoc(uid, 'exercise_records', id)); } catch(e) {}
+    await syncRecords();
   }
+  window.deleteRecord = deleteRecord;
 
   function renderRecords() {
-    const records = getRecords().slice().reverse();
     const container = document.getElementById('recordList');
     if (records.length === 0) {
-      container.innerHTML = `<div style="text-align:center;padding:30px 0;color:#b0b8c1;font-size:14px;">운동 기록이 없어요</div>`;
+      container.innerHTML = '<div style="text-align:center;padding:30px 0;color:#b0b8c1;font-size:14px;">운동 기록이 없어요</div>';
       return;
     }
-
     const grouped = {};
-    records.forEach(r => {
-      if (!grouped[r.date]) grouped[r.date] = [];
-      grouped[r.date].push(r);
-    });
-
+    [...records].reverse().forEach(r => { if (!grouped[r.date]) grouped[r.date]=[]; grouped[r.date].push(r); });
     container.innerHTML = Object.entries(grouped).map(([date, recs]) => {
-      const total = recs.reduce((s, r) => s + r.kcal, 0);
+      const total = recs.reduce((s,r) => s+r.kcal, 0);
       return `<div class="date-section">
-        <div class="date-header">${date} · 총 ${Math.round(total)} kcal</div>
-        ${recs.map(r => `
-          <div class="record-row">
-            <div class="record-info">
-              <div class="record-name">${r.name}</div>
-              <div class="record-detail">${r.minutes}분 · MET ${r.met}</div>
-            </div>
-            <span class="record-kcal">${r.kcal} kcal</span>
-            <button class="record-del" onclick="deleteRecord(${r.id})">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-              </svg>
-            </button>
-          </div>`).join('')}
+        <div class="date-header">${date} · 총 ${total} kcal</div>
+        ${recs.map(r => `<div class="record-row">
+          <div class="record-info"><div class="record-name">${r.name}</div><div class="record-detail">${r.minutes}분 · MET ${r.met}</div></div>
+          <span class="record-kcal">${r.kcal} kcal</span>
+          <button class="record-del" onclick="deleteRecord('${r._id}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>`).join('')}
       </div>`;
     }).join('');
   }
 
   function renderWeekBars() {
-    const records = getRecords();
-    const today = new Date();
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0,10);
     const days = ['일','월','화','수','목','금','토'];
-    const todayStr = today.toISOString().slice(0,10);
-
-    const weekData = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
+    const weekData = Array.from({length:7}, (_,i) => {
+      const d = new Date(now); d.setDate(d.getDate() - (6-i));
       const ds = d.toISOString().slice(0,10);
-      const kcal = records.filter(r => r.date === ds).reduce((s, r) => s + r.kcal, 0);
-      weekData.push({ day: days[d.getDay()], date: ds, kcal: Math.round(kcal), isToday: ds === todayStr });
-    }
-
-    const maxKcal = Math.max(...weekData.map(d => d.kcal), 1);
-    const totalWeek = weekData.reduce((s, d) => s + d.kcal, 0);
-    const activeDays = weekData.filter(d => d.kcal > 0).length;
-
-    document.getElementById('weekTotal').textContent = `이번 주 총 ${totalWeek} kcal`;
-    document.getElementById('weekAvg').textContent = activeDays ? `평균 ${Math.round(totalWeek/activeDays)} kcal/일` : '';
-
+      const kcal = records.filter(r=>r.date===ds).reduce((s,r)=>s+r.kcal,0);
+      return { day: days[d.getDay()], date: ds, kcal, isToday: ds===todayStr };
+    });
+    const maxK = Math.max(...weekData.map(d=>d.kcal), 1);
+    const total = weekData.reduce((s,d)=>s+d.kcal,0);
+    const active = weekData.filter(d=>d.kcal>0).length;
+    document.getElementById('weekTotal').textContent = `이번 주 총 ${total} kcal`;
+    document.getElementById('weekAvg').textContent = active ? `평균 ${Math.round(total/active)} kcal/일` : '';
     document.getElementById('weekBars').innerHTML = weekData.map(d => {
-      const h = d.kcal > 0 ? Math.max((d.kcal / maxKcal) * 80, 8) : 4;
+      const h = d.kcal > 0 ? Math.max((d.kcal/maxK)*80, 8) : 4;
       return `<div class="week-bar-wrap">
-        ${d.kcal > 0 ? `<div class="week-bar-kcal">${d.kcal}</div>` : '<div class="week-bar-kcal"></div>'}
-        <div class="week-bar${d.isToday ? ' today' : ''}" style="height:${h}px"></div>
+        <div class="week-bar-kcal">${d.kcal||''}</div>
+        <div class="week-bar${d.isToday?' today':''}" style="height:${h}px"></div>
         <div class="week-bar-label">${d.day}</div>
       </div>`;
     }).join('');
   }
-
-  // Firestore → localStorage 동기화
-  async function syncFromFirestore() {
-    try {
-      const snap = await getDocs(query(COL, orderBy("date")));
-      const records = snap.docs.map(d => ({ ...d.data(), _id: d.id, id: d.id }));
-      localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
-    } catch(e) { console.warn("Firestore 동기화 실패:", e); }
-    renderRecords();
-    renderWeekBars();
-  }
-
-  // onclick 전역 노출
-  window.addRecord = addRecord;
-  window.deleteRecord = deleteRecord;
-  window.selectEx = selectEx;
-  window.updatePreview = updatePreview;
-
-  // 날짜 초기화 (오늘, 미래 막기)
-  const today = new Date().toISOString().slice(0,10);
-  const dateInput = document.getElementById('inputDate');
-  dateInput.value = today;
-  dateInput.max = today;
-
-  renderExGrid();
-  syncFromFirestore();
 </script>
 </body>
 </html>

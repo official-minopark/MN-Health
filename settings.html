@@ -245,7 +245,8 @@
 
   <!-- 정보 초기화 -->
   <div class="section-label">위험 구역</div>
-  <div style="padding:0 0 12px;">
+  <div style="padding:0 0 12px;display:flex;flex-direction:column;gap:10px;">
+    <button class="btn-danger" id="btnLogout">로그아웃</button>
     <button class="btn-danger" onclick="clearAllData()">모든 데이터 초기화</button>
   </div>
 
@@ -292,7 +293,23 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script type="module">
+  import { auth, onAuthStateChanged, signOut } from './firebase.js';
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) { location.href = 'index.html'; return; }
+    // 프로필 이름 자동 채우기
+    if (!localStorage.getItem('mn_name') && user.displayName) {
+      document.getElementById('inputName').value = user.displayName;
+    }
+    loadProfile();
+  });
+
+  document.getElementById('btnLogout').onclick = async () => {
+    if (!confirm('로그아웃 할까요?')) return;
+    await signOut(auth);
+    location.href = 'index.html';
+  };
   function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -355,8 +372,6 @@
     showToast('모든 데이터가 초기화됐어요');
     loadProfile();
   }
-
-  loadProfile();
 </script>
 </body>
 </html>

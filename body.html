@@ -6,211 +6,65 @@
   <title>신체 기록 - MN Health</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      background: #f9fafb;
-      color: #191f28;
-      min-height: 100vh;
-    }
-    header {
-      background: #fff;
-      border-bottom: 1px solid #f2f4f6;
-      padding: 0 20px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: #f9fafb; color: #191f28; min-height: 100vh; }
+    header { background: #fff; border-bottom: 1px solid #f2f4f6; padding: 0 20px; height: 56px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
     header a { color: #191f28; text-decoration: none; display: flex; align-items: center; }
     header h2 { font-size: 17px; font-weight: 700; }
     main { max-width: 480px; margin: 0 auto; padding: 24px 20px 100px; }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
+    .card { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
     .card-label { font-size: 12px; color: #6b7684; font-weight: 500; margin-bottom: 8px; }
     .card-value { font-size: 32px; font-weight: 700; color: #191f28; letter-spacing: -1px; }
-    .card-unit { font-size: 16px; color: #6b7684; font-weight: 400; margin-left: 4px; }
-    .card-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 100px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-top: 10px;
-    }
+    .card-unit { font-size: 16px; color: #6b7684; margin-left: 4px; }
+    .card-badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 13px; font-weight: 600; margin-top: 10px; }
     .badge-normal { background: #e8f3ff; color: #3182f6; }
     .badge-warning { background: #fff3e0; color: #ff9800; }
     .badge-danger { background: #ffeaea; color: #f44336; }
-
-    /* BMI 상세 바 */
-    .bmi-bar-wrap {
-      background: #f2f4f6;
-      border-radius: 100px;
-      height: 10px;
-      margin: 16px 0 8px;
-      position: relative;
-    }
-    .bmi-segments {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      border-radius: 100px;
-      overflow: hidden;
-      display: flex;
-    }
-    .bmi-seg-uw { background: #90caf9; flex: 35; } /* <18.5 → 35% */
-    .bmi-seg-nm { background: #66bb6a; flex: 22.5; } /* 18.5~23 */
-    .bmi-seg-ow { background: #ffa726; flex: 10; } /* 23~25 */
-    .bmi-seg-ob { background: #ef5350; flex: 32.5; } /* 25+ */
-    .bmi-marker {
-      position: absolute;
-      top: -4px;
-      width: 18px; height: 18px;
-      background: #fff;
-      border: 3px solid #3182f6;
-      border-radius: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 2px 6px rgba(49,130,246,0.4);
-      transition: left 0.6s ease;
-    }
-    .bmi-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 6px;
-    }
+    .bmi-bar-wrap { background: #f2f4f6; border-radius: 100px; height: 10px; margin: 16px 0 8px; position: relative; }
+    .bmi-segments { position: absolute; top:0;left:0;right:0;bottom:0; border-radius: 100px; overflow: hidden; display: flex; }
+    .bmi-seg-uw { background: #90caf9; flex: 35; }
+    .bmi-seg-nm { background: #66bb6a; flex: 22.5; }
+    .bmi-seg-ow { background: #ffa726; flex: 10; }
+    .bmi-seg-ob { background: #ef5350; flex: 32.5; }
+    .bmi-marker { position: absolute; top: -4px; width: 18px; height: 18px; background: #fff; border: 3px solid #3182f6; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 2px 6px rgba(49,130,246,0.4); transition: left 0.6s ease; }
+    .bmi-labels { display: flex; justify-content: space-between; margin-top: 6px; }
     .bmi-labels span { font-size: 11px; color: #b0b8c1; }
-
-    /* 기록 폼 */
-    .form-row { margin-bottom: 16px; }
+    .form-row { margin-bottom: 14px; }
     .form-row label { font-size: 13px; color: #6b7684; font-weight: 500; display: block; margin-bottom: 6px; }
-    .form-row input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1.5px solid #f2f4f6;
-      border-radius: 12px;
-      font-size: 16px;
-      color: #191f28;
-      background: #f9fafb;
-      outline: none;
-      transition: border-color 0.2s;
-      font-family: inherit;
-    }
+    .form-row input { width: 100%; padding: 14px 16px; border: 1.5px solid #f2f4f6; border-radius: 12px; font-size: 16px; color: #191f28; background: #f9fafb; outline: none; transition: border-color 0.2s; font-family: inherit; }
     .form-row input:focus { border-color: #3182f6; background: #fff; }
-
-    .btn-primary {
-      width: 100%;
-      background: #3182f6;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.15s;
-    }
+    .btn-primary { width: 100%; background: #3182f6; color: #fff; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.15s; }
     .btn-primary:active { background: #1a6fe0; }
-
-    /* 그래프 영역 */
-    .graph-wrap {
-      margin-top: 8px;
-      overflow-x: auto;
-    }
+    .graph-wrap { margin-top: 8px; overflow-x: auto; }
     canvas { display: block; }
-
-    /* 히스토리 */
-    .history-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #f2f4f6;
-    }
+    .history-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f2f4f6; }
     .history-row:last-child { border-bottom: none; }
     .history-date { font-size: 13px; color: #6b7684; }
-    .history-vals { display: flex; gap: 16px; align-items: center; }
-    .history-weight { font-size: 15px; font-weight: 600; color: #191f28; }
+    .history-vals { display: flex; gap: 12px; align-items: center; flex: 1; justify-content: flex-end; margin-right: 12px; }
+    .history-weight { font-size: 15px; font-weight: 600; }
     .history-bmi { font-size: 13px; color: #6b7684; }
-    .history-del {
-      background: none;
-      border: none;
-      color: #b0b8c1;
-      cursor: pointer;
-      padding: 4px;
-      display: flex;
-      align-items: center;
-    }
-
-    nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: #fff;
-      border-top: 1px solid #f2f4f6;
-      display: flex;
-      height: 64px;
-      z-index: 100;
-    }
-    nav a {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-decoration: none;
-      color: #b0b8c1;
-      font-size: 10px;
-      font-weight: 500;
-    }
+    .history-del { background: none; border: none; color: #b0b8c1; cursor: pointer; padding: 4px; display: flex; align-items: center; }
+    nav { position: fixed; bottom:0;left:0;right:0; background:#fff; border-top:1px solid #f2f4f6; display:flex; height:64px; z-index:100; }
+    nav a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:#b0b8c1; font-size:10px; font-weight:500; }
     nav a.active { color: #3182f6; }
   </style>
 </head>
 <body>
-
 <header>
-  <a href="index.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  </a>
+  <a href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></a>
   <h2>신체 기록</h2>
 </header>
-
 <main>
-  <!-- 현재 BMI 카드 -->
   <div class="card">
     <div class="card-label">현재 BMI</div>
-    <div>
-      <span class="card-value" id="bmiValue">--</span>
-      <span class="card-unit">kg/m²</span>
-    </div>
+    <div><span class="card-value" id="bmiValue">--</span><span class="card-unit">kg/m²</span></div>
     <div class="bmi-bar-wrap">
-      <div class="bmi-segments">
-        <div class="bmi-seg-uw"></div>
-        <div class="bmi-seg-nm"></div>
-        <div class="bmi-seg-ow"></div>
-        <div class="bmi-seg-ob"></div>
-      </div>
+      <div class="bmi-segments"><div class="bmi-seg-uw"></div><div class="bmi-seg-nm"></div><div class="bmi-seg-ow"></div><div class="bmi-seg-ob"></div></div>
       <div class="bmi-marker" id="bmiMarker" style="left:50%"></div>
     </div>
-    <div class="bmi-labels">
-      <span>저체중<br>&lt;18.5</span>
-      <span>정상<br>18.5~23</span>
-      <span>과체중<br>23~25</span>
-      <span>비만<br>&ge;25</span>
-    </div>
-    <span class="card-badge" id="bmiBadge">정보 없음</span>
+    <div class="bmi-labels"><span>저체중<br>&lt;18.5</span><span>정상<br>18.5~23</span><span>과체중<br>23~25</span><span>비만<br>&ge;25</span></div>
+    <span class="card-badge" id="bmiBadge" style="background:#f2f4f6;color:#b0b8c1;">정보 없음</span>
   </div>
 
-  <!-- 체중/키 입력 카드 -->
   <div class="card">
     <div class="card-label" style="margin-bottom:16px">기록 추가</div>
     <div class="form-row">
@@ -225,138 +79,74 @@
       <label>체중 (kg)</label>
       <input type="number" id="inputWeight" placeholder="65.0" step="0.1" />
     </div>
-    <button class="btn-primary" onclick="saveRecord()">저장하기</button>
+    <button class="btn-primary" id="saveBtn">저장하기</button>
   </div>
 
-  <!-- 체중 변화 그래프 -->
   <div class="card">
     <div class="card-label">체중 변화</div>
-    <div class="graph-wrap">
-      <canvas id="weightChart" height="180"></canvas>
-    </div>
+    <div class="graph-wrap"><canvas id="weightChart" height="180"></canvas></div>
   </div>
 
-  <!-- 기록 히스토리 -->
   <div class="card">
     <div class="card-label" style="margin-bottom:12px">기록 내역</div>
-    <div id="historyList">
-      <div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px;">기록이 없어요</div>
-    </div>
+    <div id="historyList"><div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px;">기록이 없어요</div></div>
   </div>
 </main>
 
 <nav>
-  <a href="index.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      <polyline points="9 22 9 12 15 12 15 22"/>
-    </svg>
-    홈
-  </a>
-  <a href="body.html" class="active">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-    신체
-  </a>
-  <a href="exercise.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-    </svg>
-    운동
-  </a>
-  <a href="settings.html">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="8" r="4"/>
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-    </svg>
-    설정
-  </a>
+  <a href="index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>홈</a>
+  <a href="body.html" class="active"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>신체</a>
+  <a href="exercise.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>운동</a>
+  <a href="settings.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>설정</a>
 </nav>
 
 <script type="module">
-  const RECORDS_KEY = 'mn_body_records';
+  import { auth, db, onAuthStateChanged, userCol, userDoc, orderBy, getDocs, addDoc, deleteDoc, query } from './firebase.js';
 
-  function getRecords() {
-    return JSON.parse(localStorage.getItem(RECORDS_KEY) || '[]');
-  }
-  function saveRecords(records) {
-    localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+  let uid = null;
+  let records = [];
+
+  // 날짜 초기화 (오늘, 미래 막기)
+  const today = new Date().toISOString().slice(0,10);
+  const dateInput = document.getElementById('inputDate');
+  dateInput.value = today;
+  dateInput.max = today;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { location.href = 'index.html'; return; }
+    uid = user.uid;
+    await syncRecords();
+  });
+
+  async function syncRecords() {
+    try {
+      const snap = await getDocs(query(userCol(uid, 'body_records'), orderBy('date')));
+      records = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
+    } catch(e) { console.warn(e); }
+    loadLatestBMI();
+    renderHistory();
+    renderChart();
   }
 
-  function calcBMI(weight, height) {
-    return weight / ((height / 100) ** 2);
-  }
+  function calcBMI(w, h) { return w / ((h/100)**2); }
 
-  function getBMILabel(bmi) {
-    if (bmi < 18.5) return { label: '저체중', cls: 'badge-warning' };
-    if (bmi < 23)   return { label: '정상', cls: 'badge-normal' };
-    if (bmi < 25)   return { label: '과체중', cls: 'badge-warning' };
-    return { label: '비만', cls: 'badge-danger' };
-  }
-
-  function getBMIPercent(bmi) {
-    // 15~35 범위를 0~100%로
-    return Math.min(Math.max((bmi - 15) / 20 * 100, 2), 98);
+  function getBMIInfo(bmi) {
+    if (bmi < 18.5) return { label:'저체중', cls:'badge-warning' };
+    if (bmi < 23)   return { label:'정상', cls:'badge-normal' };
+    if (bmi < 25)   return { label:'과체중', cls:'badge-warning' };
+    return { label:'비만', cls:'badge-danger' };
   }
 
   function updateBMIDisplay(bmi) {
     document.getElementById('bmiValue').textContent = bmi.toFixed(1);
-    const { label, cls } = getBMILabel(bmi);
+    const { label, cls } = getBMIInfo(bmi);
     const badge = document.getElementById('bmiBadge');
-    badge.textContent = label;
-    badge.className = 'card-badge ' + cls;
-    document.getElementById('bmiMarker').style.left = getBMIPercent(bmi) + '%';
-
-    // 홈에서 쓸 수 있게 저장
-    localStorage.setItem('mn_weight', document.getElementById('inputWeight').value || '');
-  }
-
-  function saveRecord() {
-    const height = parseFloat(document.getElementById('inputHeight').value);
-    const weight = parseFloat(document.getElementById('inputWeight').value);
-    if (!height || !weight || height < 100 || height > 250 || weight < 20 || weight > 300) {
-      alert('키와 체중을 올바르게 입력해 주세요.');
-      return;
-    }
-
-    const bmi = calcBMI(weight, height);
-    const today = new Date().toISOString().slice(0, 10);
-    const records = getRecords();
-
-    // 같은 날 기록 있으면 덮어쓰기
-    const idx = records.findIndex(r => r.date === today);
-    const record = { date: today, height, weight, bmi: parseFloat(bmi.toFixed(2)) };
-    if (idx >= 0) records[idx] = record;
-    else records.push(record);
-    records.sort((a, b) => a.date.localeCompare(b.date));
-
-    saveRecords(records);
-    localStorage.setItem('mn_height', height);
-    localStorage.setItem('mn_weight', weight);
-
-    updateBMIDisplay(bmi);
-    renderHistory();
-    renderChart();
-  }
-
-  function deleteRecord(date) {
-    if (!confirm('이 기록을 삭제할까요?')) return;
-    const records = getRecords().filter(r => r.date !== date);
-    saveRecords(records);
-    renderHistory();
-    renderChart();
-    loadLatestBMI();
+    badge.textContent = label; badge.className = 'card-badge ' + cls;
+    const pct = Math.min(Math.max((bmi - 15) / 20 * 100, 2), 98);
+    document.getElementById('bmiMarker').style.left = pct + '%';
   }
 
   function loadLatestBMI() {
-    // 날짜 input: 오늘로 초기화, 미래 막기
-    const today = new Date().toISOString().slice(0,10);
-    const dateInput = document.getElementById('inputDate');
-    dateInput.value = today;
-    dateInput.max = today;
-
-    const records = getRecords();
     if (records.length === 0) return;
     const latest = records[records.length - 1];
     document.getElementById('inputHeight').value = latest.height;
@@ -364,177 +154,85 @@
     updateBMIDisplay(latest.bmi);
   }
 
+  document.getElementById('saveBtn').onclick = async () => {
+    const dateVal = dateInput.value;
+    const height = parseFloat(document.getElementById('inputHeight').value);
+    const weight = parseFloat(document.getElementById('inputWeight').value);
+    if (!dateVal) { alert('날짜를 선택해 주세요.'); return; }
+    if (!height || !weight || height < 100 || height > 250 || weight < 20 || weight > 300) {
+      alert('키와 체중을 올바르게 입력해 주세요.'); return;
+    }
+    const bmi = parseFloat(calcBMI(weight, height).toFixed(2));
+    const existing = records.find(r => r.date === dateVal);
+    try {
+      if (existing) await deleteDoc(userDoc(uid, 'body_records', existing._id));
+      await addDoc(userCol(uid, 'body_records'), { date: dateVal, height, weight, bmi });
+    } catch(e) { alert('저장에 실패했어요.'); return; }
+    await syncRecords();
+  };
+
+  async function deleteRecord(id) {
+    if (!confirm('이 기록을 삭제할까요?')) return;
+    try { await deleteDoc(userDoc(uid, 'body_records', id)); } catch(e) {}
+    await syncRecords();
+  }
+  window.deleteRecord = deleteRecord;
+
   function renderHistory() {
-    const records = getRecords().slice().reverse();
     const list = document.getElementById('historyList');
     if (records.length === 0) {
       list.innerHTML = '<div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px;">기록이 없어요</div>';
       return;
     }
-    list.innerHTML = records.map(r => {
-      const { label } = getBMILabel(r.bmi);
+    list.innerHTML = [...records].reverse().map(r => {
+      const { label } = getBMIInfo(r.bmi);
       return `<div class="history-row">
         <span class="history-date">${r.date}</span>
         <div class="history-vals">
           <span class="history-weight">${r.weight} kg</span>
           <span class="history-bmi">BMI ${r.bmi} · ${label}</span>
         </div>
-        <button class="history-del" onclick="deleteRecord('${r.date}')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-          </svg>
+        <button class="history-del" onclick="deleteRecord('${r._id}')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
       </div>`;
     }).join('');
   }
 
   function renderChart() {
-    const records = getRecords();
     const canvas = document.getElementById('weightChart');
     const ctx = canvas.getContext('2d');
-    const W = canvas.parentElement.clientWidth - 0;
-    canvas.width = W;
-    canvas.height = 180;
+    const W = canvas.parentElement.clientWidth;
+    canvas.width = W; canvas.height = 180;
     ctx.clearRect(0, 0, W, 180);
-
     if (records.length < 2) {
-      ctx.fillStyle = '#b0b8c1';
-      ctx.font = '13px -apple-system, sans-serif';
-      ctx.textAlign = 'center';
+      ctx.fillStyle = '#b0b8c1'; ctx.font = '13px -apple-system,sans-serif'; ctx.textAlign = 'center';
       ctx.fillText('기록이 2개 이상 있으면 그래프가 표시돼요', W/2, 90);
       return;
     }
-
     const weights = records.map(r => r.weight);
-    const minW = Math.min(...weights) - 2;
-    const maxW = Math.max(...weights) + 2;
-    const padL = 40, padR = 16, padT = 16, padB = 36;
-    const gW = W - padL - padR;
-    const gH = 180 - padT - padB;
-
-    const xOf = i => padL + (i / (records.length - 1)) * gW;
-    const yOf = w => padT + (1 - (w - minW) / (maxW - minW)) * gH;
-
-    // 그리드
-    ctx.strokeStyle = '#f2f4f6';
-    ctx.lineWidth = 1;
-    for (let i = 0; i <= 4; i++) {
-      const y = padT + (i / 4) * gH;
-      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-      const val = maxW - (i / 4) * (maxW - minW);
-      ctx.fillStyle = '#b0b8c1';
-      ctx.font = '11px -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(val.toFixed(1), padL - 4, y + 4);
+    const minW = Math.min(...weights) - 2, maxW = Math.max(...weights) + 2;
+    const pL=40, pR=16, pT=16, pB=36, gW=W-pL-pR, gH=180-pT-pB;
+    const xOf = i => pL + (i/(records.length-1))*gW;
+    const yOf = w => pT + (1-(w-minW)/(maxW-minW))*gH;
+    ctx.strokeStyle='#f2f4f6'; ctx.lineWidth=1;
+    for (let i=0;i<=4;i++) {
+      const y=pT+(i/4)*gH;
+      ctx.beginPath(); ctx.moveTo(pL,y); ctx.lineTo(W-pR,y); ctx.stroke();
+      ctx.fillStyle='#b0b8c1'; ctx.font='11px -apple-system,sans-serif'; ctx.textAlign='right';
+      ctx.fillText((maxW-(i/4)*(maxW-minW)).toFixed(1), pL-4, y+4);
     }
-
-    // 라인
-    ctx.beginPath();
-    ctx.strokeStyle = '#3182f6';
-    ctx.lineWidth = 2.5;
-    ctx.lineJoin = 'round';
-    records.forEach((r, i) => {
-      i === 0 ? ctx.moveTo(xOf(i), yOf(r.weight)) : ctx.lineTo(xOf(i), yOf(r.weight));
-    });
+    ctx.beginPath(); ctx.strokeStyle='#3182f6'; ctx.lineWidth=2.5; ctx.lineJoin='round';
+    records.forEach((r,i) => i===0?ctx.moveTo(xOf(i),yOf(r.weight)):ctx.lineTo(xOf(i),yOf(r.weight)));
     ctx.stroke();
-
-    // 점
-    records.forEach((r, i) => {
-      ctx.beginPath();
-      ctx.arc(xOf(i), yOf(r.weight), 4, 0, Math.PI * 2);
-      ctx.fillStyle = '#3182f6';
-      ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(xOf(i), yOf(r.weight), 2, 0, Math.PI * 2);
-      ctx.fill();
+    records.forEach((r,i) => {
+      ctx.beginPath(); ctx.arc(xOf(i),yOf(r.weight),4,0,Math.PI*2); ctx.fillStyle='#3182f6'; ctx.fill();
+      ctx.beginPath(); ctx.arc(xOf(i),yOf(r.weight),2,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
     });
-
-    // X축 레이블 (처음/마지막)
-    ctx.fillStyle = '#b0b8c1';
-    ctx.font = '11px -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(records[0].date.slice(5), xOf(0), 180 - 8);
-    ctx.fillText(records[records.length-1].date.slice(5), xOf(records.length-1), 180 - 8);
+    ctx.fillStyle='#b0b8c1'; ctx.font='11px -apple-system,sans-serif'; ctx.textAlign='center';
+    ctx.fillText(records[0].date.slice(5), xOf(0), 180-8);
+    ctx.fillText(records[records.length-1].date.slice(5), xOf(records.length-1), 180-8);
   }
-
-  // ── Firebase 설정 ──
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBDIgsg99fxj2RFeEeFVD92mNltAweDpd8",
-    authDomain: "mn-health.firebaseapp.com",
-    projectId: "mn-health",
-    storageBucket: "mn-health.firebasestorage.app",
-    messagingSenderId: "442489563296",
-    appId: "1:442489563296:web:c2a044ee36b1a1c59641c5"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const COL = collection(db, "body_records");
-
-  // Firestore → localStorage 동기화 후 렌더링
-  async function syncFromFirestore() {
-    try {
-      const snap = await getDocs(query(COL, orderBy("date")));
-      const records = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
-      localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
-    } catch(e) { console.warn("Firestore 동기화 실패, 로컬 사용:", e); }
-    loadLatestBMI();
-    renderHistory();
-    renderChart();
-  }
-
-  // saveRecord에 Firestore 저장 추가
-  const _origSave = saveRecord;
-  window.saveRecord = async function() {
-    const dateVal = document.getElementById('inputDate').value;
-    const height = parseFloat(document.getElementById('inputHeight').value);
-    const weight = parseFloat(document.getElementById('inputWeight').value);
-    if (!dateVal) { alert('날짜를 선택해 주세요.'); return; }
-    if (!height || !weight || height < 100 || height > 250 || weight < 20 || weight > 300) {
-      alert('키와 체중을 올바르게 입력해 주세요.');
-      return;
-    }
-    const bmi = weight / ((height / 100) ** 2);
-    const records = getRecords();
-    const existing = records.find(r => r.date === dateVal);
-
-    // Firestore에 저장
-    try {
-      if (existing && existing._id) {
-        await deleteDoc(doc(db, "body_records", existing._id));
-      }
-      await addDoc(COL, { date: dateVal, height, weight, bmi: parseFloat(bmi.toFixed(2)) });
-    } catch(e) { console.warn("Firestore 저장 실패:", e); }
-
-    localStorage.setItem('mn_height', height);
-    localStorage.setItem('mn_weight', weight);
-    updateBMIDisplay(bmi);
-    await syncFromFirestore();
-  };
-
-  // deleteRecord에 Firestore 삭제 추가
-  window.deleteRecord = async function(date) {
-    if (!confirm('이 기록을 삭제할까요?')) return;
-    const records = getRecords();
-    const target = records.find(r => r.date === date);
-    if (target && target._id) {
-      try { await deleteDoc(doc(db, "body_records", target._id)); } catch(e) {}
-    }
-    const newRecs = records.filter(r => r.date !== date);
-    saveRecords(newRecs);
-    renderHistory();
-    renderChart();
-    loadLatestBMI();
-  };
-
-  // onclick 전역 노출
-  window.saveRecord = window.saveRecord || saveRecord;
-  window.deleteRecord = window.deleteRecord || deleteRecord;
-
-  syncFromFirestore();
 </script>
 </body>
 </html>
