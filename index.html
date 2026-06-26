@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MN Health</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      background: #f9fafb;
+      color: #191f28;
+      min-height: 100vh;
+    }
+
+    /* 상단 헤더 */
+    header {
+      background: #fff;
+      border-bottom: 1px solid #f2f4f6;
+      padding: 0 20px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3182f6;
+      letter-spacing: -0.5px;
+    }
+    .header-icons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .header-icons a {
+      color: #6b7684;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    /* 메인 컨테이너 */
+    main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 20px 100px;
+    }
+
+    /* 인사 섹션 */
+    .greeting {
+      margin-bottom: 24px;
+    }
+    .greeting h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #191f28;
+      letter-spacing: -0.5px;
+    }
+    .greeting p {
+      font-size: 14px;
+      color: #6b7684;
+      margin-top: 4px;
+    }
+
+    /* 카드 공통 */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .card-label {
+      font-size: 12px;
+      color: #6b7684;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .card-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #191f28;
+      letter-spacing: -1px;
+    }
+    .card-unit {
+      font-size: 14px;
+      color: #6b7684;
+      font-weight: 400;
+      margin-left: 4px;
+    }
+    .card-sub {
+      font-size: 13px;
+      color: #6b7684;
+      margin-top: 6px;
+    }
+    .card-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .badge-normal { background: #e8f3ff; color: #3182f6; }
+    .badge-warning { background: #fff3e0; color: #ff9800; }
+    .badge-danger { background: #ffeaea; color: #f44336; }
+
+    /* BMI 카드 */
+    .bmi-card { cursor: pointer; }
+    .bmi-bar-wrap {
+      background: #f2f4f6;
+      border-radius: 100px;
+      height: 8px;
+      margin-top: 14px;
+      position: relative;
+      overflow: visible;
+    }
+    .bmi-bar-fill {
+      height: 8px;
+      border-radius: 100px;
+      background: #3182f6;
+      transition: width 0.6s ease;
+    }
+    .bmi-marker {
+      position: absolute;
+      top: -4px;
+      width: 16px;
+      height: 16px;
+      background: #3182f6;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 2px 4px rgba(49,130,246,0.4);
+      transition: left 0.6s ease;
+    }
+
+    /* 오늘 운동 카드 */
+    .exercise-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f2f4f6;
+    }
+    .exercise-row:last-child { border-bottom: none; }
+    .exercise-name { font-size: 14px; color: #191f28; font-weight: 500; }
+    .exercise-kcal { font-size: 14px; color: #3182f6; font-weight: 600; }
+
+    /* 요약 그리드 */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .summary-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .summary-card .card-value { font-size: 22px; }
+
+    /* 빠른 이동 버튼 */
+    .quick-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .quick-btn {
+      background: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .quick-btn:active { transform: scale(0.97); }
+    .quick-btn svg { color: #3182f6; }
+    .quick-btn span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #191f28;
+    }
+    .quick-btn small {
+      font-size: 12px;
+      color: #6b7684;
+    }
+
+    /* 하단 탭바 */
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      border-top: 1px solid #f2f4f6;
+      display: flex;
+      height: 64px;
+      z-index: 100;
+    }
+    nav a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-decoration: none;
+      color: #b0b8c1;
+      font-size: 10px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    nav a.active { color: #3182f6; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MN Health</div>
+  <div class="header-icons">
+    <a href="settings.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="greeting">
+    <h1 id="greetingText">안녕하세요</h1>
+    <p id="greetingDate"></p>
+  </div>
+
+  <!-- BMI 카드 -->
+  <div class="card bmi-card" onclick="location.href='body.html'">
+    <div class="card-label">내 BMI</div>
+    <div>
+      <span class="card-value" id="bmiValue">--</span>
+      <span class="card-unit">kg/m²</span>
+    </div>
+    <div class="bmi-bar-wrap">
+      <div class="bmi-bar-fill" id="bmiFill" style="width:0%"></div>
+      <div class="bmi-marker" id="bmiMarker" style="left:0%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;">
+      <span style="font-size:11px;color:#b0b8c1;">저체중</span>
+      <span style="font-size:11px;color:#b0b8c1;">정상</span>
+      <span style="font-size:11px;color:#b0b8c1;">과체중</span>
+      <span style="font-size:11px;color:#b0b8c1;">비만</span>
+    </div>
+    <span class="card-badge" id="bmiBadge">정보 없음</span>
+  </div>
+
+  <!-- 요약 그리드 -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="card-label">오늘 소모 칼로리</div>
+      <div>
+        <span class="card-value" id="todayKcal">0</span>
+        <span class="card-unit">kcal</span>
+      </div>
+      <div class="card-sub" id="kcalSub">운동 기록 없음</div>
+    </div>
+    <div class="summary-card">
+      <div class="card-label">이번 주 운동</div>
+      <div>
+        <span class="card-value" id="weekCount">0</span>
+        <span class="card-unit">회</span>
+      </div>
+      <div class="card-sub" id="weekSub">목표: 3회</div>
+    </div>
+  </div>
+
+  <!-- 오늘 운동 카드 -->
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="card-label" style="margin:0">오늘 운동</div>
+      <a href="exercise.html" style="font-size:13px;color:#3182f6;text-decoration:none;font-weight:600;">+ 추가</a>
+    </div>
+    <div id="todayExerciseList">
+      <div style="text-align:center;padding:20px 0;color:#b0b8c1;font-size:14px;">
+        오늘 운동 기록이 없어요
+      </div>
+    </div>
+  </div>
+
+  <!-- 빠른 이동 -->
+  <div class="quick-btns">
+    <a href="body.html" class="quick-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <span>신체 기록</span>
+      <small>체중 · BMI 관리</small>
+    </a>
+    <a href="exercise.html" class="quick-btn">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      <span>운동 기록</span>
+      <small>칼로리 계산</small>
+    </a>
+  </div>
+</main>
+
+<nav>
+  <a href="index.html" class="active">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    홈
+  </a>
+  <a href="body.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+    신체
+  </a>
+  <a href="exercise.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+    </svg>
+    운동
+  </a>
+  <a href="settings.html">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+    </svg>
+    설정
+  </a>
+</nav>
+
+<script>
+  // Firebase config - 나중에 여기에 넣어줘
+  // const firebaseConfig = { ... };
+
+  // 날짜/인사
+  function setGreeting() {
+    const now = new Date();
+    const h = now.getHours();
+    let greet = h < 6 ? '좋은 새벽이에요' : h < 12 ? '좋은 아침이에요' : h < 18 ? '안녕하세요' : '좋은 저녁이에요';
+    const name = localStorage.getItem('mn_name');
+    document.getElementById('greetingText').textContent = name ? `${name}님, ${greet}` : greet;
+
+    const days = ['일','월','화','수','목','금','토'];
+    document.getElementById('greetingDate').textContent =
+      `${now.getMonth()+1}월 ${now.getDate()}일 ${days[now.getDay()]}요일`;
+  }
+
+  // BMI 표시
+  function loadBMI() {
+    const weight = parseFloat(localStorage.getItem('mn_weight'));
+    const height = parseFloat(localStorage.getItem('mn_height'));
+    if (!weight || !height) return;
+
+    const bmi = weight / ((height/100) ** 2);
+    document.getElementById('bmiValue').textContent = bmi.toFixed(1);
+
+    // 한국비만학회 아시아태평양 기준
+    let label, cls;
+    if (bmi < 18.5) { label = '저체중'; cls = 'badge-warning'; }
+    else if (bmi < 23) { label = '정상'; cls = 'badge-normal'; }
+    else if (bmi < 25) { label = '과체중'; cls = 'badge-warning'; }
+    else { label = '비만'; cls = 'badge-danger'; }
+
+    const badge = document.getElementById('bmiBadge');
+    badge.textContent = label;
+    badge.className = 'card-badge ' + cls;
+
+    // BMI 바 (범위: 15~35)
+    const pct = Math.min(Math.max((bmi - 15) / 20 * 100, 0), 100);
+    document.getElementById('bmiMarker').style.left = pct + '%';
+  }
+
+  // 오늘 운동 로드
+  function loadTodayExercise() {
+    const today = new Date().toISOString().slice(0,10);
+    const records = JSON.parse(localStorage.getItem('mn_exercise') || '[]');
+    const todayRecs = records.filter(r => r.date === today);
+
+    const list = document.getElementById('todayExerciseList');
+    if (todayRecs.length === 0) return;
+
+    let totalKcal = 0;
+    list.innerHTML = todayRecs.map(r => {
+      totalKcal += r.kcal;
+      return `<div class="exercise-row">
+        <span class="exercise-name">${r.name}</span>
+        <span class="exercise-kcal">${r.kcal} kcal</span>
+      </div>`;
+    }).join('');
+
+    document.getElementById('todayKcal').textContent = Math.round(totalKcal);
+    document.getElementById('kcalSub').textContent = `${todayRecs.length}가지 운동`;
+
+    // 이번 주 운동 횟수
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const weekDays = new Set(
+      records.filter(r => new Date(r.date) >= weekStart).map(r => r.date)
+    );
+    document.getElementById('weekCount').textContent = weekDays.size;
+  }
+
+  setGreeting();
+  loadBMI();
+  loadTodayExercise();
+</script>
+</body>
+</html>
